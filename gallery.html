@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery - Paragon Campaign</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+  
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #0a0a0a;
+      --accent: #002d72;
+      --gold: #c5a028;
+      --gray: #f2f2f2;
+      --container-padding: max(20px, 5vw);
+    }
+
+    * { 
+      margin:0; 
+      padding:0; 
+      box-sizing:border-box; 
+      outline:none; 
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background: var(--bg); 
+      color: var(--text); 
+      overflow-x: hidden;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    /* --- News Ticker --- */
+    .news-ticker {
+      background: var(--accent);
+      color: white;
+      padding: 12px 0;
+      overflow: hidden;
+      position: relative;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .ticker-container {
+      display: flex;
+      white-space: nowrap;
+      animation: ticker 30s linear infinite;
+    }
+
+    .ticker-item {
+      padding: 0 40px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: opacity 0.3s;
+    }
+
+    .ticker-item:hover {
+      opacity: 0.8;
+    }
+
+    .ticker-item i {
+      color: var(--gold);
+    }
+
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* --- Loading Spinner --- */
+    .loading-spinner {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid var(--gray);
+      border-top: 5px solid var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* --- Navigation --- */
+    nav {
+      position: sticky; 
+      top:0; 
+      width:100%; 
+      padding: 1rem var(--container-padding);
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      z-index: 1000; 
+      background: rgba(255,255,255,0.95); 
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      height: 70px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .logo { 
+      font-weight: 900; 
+      font-size: clamp(1rem, 4vw, 1.2rem); 
+      letter-spacing: -0.5px; 
+      text-transform: uppercase;
+      color: var(--text);
+      text-decoration: none;
+    }
+    
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    
+    .nav-link {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+      transition: color 0.3s;
+      position: relative;
+    }
+    
+    .nav-link:after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      transition: width 0.3s;
+    }
+    
+    .nav-link:hover:after,
+    .nav-link.active:after {
+      width: 100%;
+    }
+    
+    .nav-link:hover {
+      color: var(--accent);
+    }
+    
+    /* --- Gallery Container --- */
+    .gallery-container {
+      padding: 40px var(--container-padding);
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* --- Event Filters --- */
+    .event-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .filter-btn {
+      background: var(--gray);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.9rem;
+    }
+
+    .filter-btn:hover {
+      background: var(--accent);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .filter-btn.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    .filter-btn.all-btn {
+      background: var(--gold);
+      color: var(--text);
+    }
+
+    .filter-btn.all-btn.active {
+      background: var(--gold);
+      color: var(--text);
+      box-shadow: 0 0 0 2px var(--gold);
+    }
+
+    /* --- Media Grid --- */
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 25px;
+      margin-bottom: 60px;
+    }
+
+    .media-item {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--gray);
+      aspect-ratio: 4/3;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .media-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+
+    .media-item img,
+    .media-item video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .media-item.video::before {
+      content: '▶';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 3rem;
+      z-index: 2;
+      opacity: 0.9;
+      transition: opacity 0.3s;
+    }
+
+    .media-item:hover::before {
+      opacity: 1;
+    }
+
+    .media-item.video::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.3);
+      z-index: 1;
+    }
+
+    .media-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      color: white;
+      padding: 20px;
+      transform: translateY(100%);
+      transition: transform 0.3s;
+      z-index: 3;
+    }
+
+    .media-item:hover .media-caption {
+      transform: translateY(0);
+    }
+
+    .media-caption h4 {
+      font-size: 1rem;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .media-caption p {
+      font-size: 0.8rem;
+      opacity: 0.8;
+    }
+
+    .event-tag {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: var(--accent);
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      z-index: 3;
+    }
+
+    /* --- Lightbox Modal --- */
+    .lightbox-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+
+    .lightbox-modal.active {
+      display: flex;
+    }
+
+    .lightbox-content-wrapper {
+      position: relative;
+      max-width: 90%;
+      max-height: 90%;
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .close-lightbox {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+
+    .close-lightbox:hover {
+      background: var(--accent);
+      transform: scale(1.1);
+    }
+
+    .lightbox-content {
+      width: 100%;
+      height: 100%;
+    }
+
+    .lightbox-image {
+      width: 100%;
+      height: auto;
+      max-height: 85vh;
+      object-fit: contain;
+      display: block;
+    }
+
+    .lightbox-video {
+      width: 100%;
+      height: auto;
+      max-height: 85vh;
+      background: #000;
+      outline: none;
+    }
+
+    .lightbox-info {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+      color: white;
+      padding: 25px 20px 20px;
+    }
+
+    .lightbox-info h3 {
+      font-size: 1.3rem;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .lightbox-info p {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-bottom: 5px;
+    }
+
+    .lightbox-event {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      margin-top: 10px;
+    }
+
+    /* --- Empty State --- */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+
+    .empty-state i {
+      font-size: 4rem;
+      color: var(--gray);
+      margin-bottom: 20px;
+    }
+
+    /* --- Responsive --- */
+    @media (max-width: 768px) {
+      .gallery-container {
+        padding: 20px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .mobile-menu-btn {
+        display: block;
+      }
+
+      .media-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+      }
+
+      .event-filters {
+        overflow-x: auto;
+        padding-bottom: 15px;
+        margin-bottom: 30px;
+      }
+
+      .filter-btn {
+        padding: 8px 16px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .media-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .lightbox-content-wrapper {
+        max-width: 95%;
+      }
+    }
+
+    /* --- Mobile Menu Button --- */
+    .mobile-menu-btn {
+      display: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid #ddd;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: 0.3s;
+      background: white;
+      z-index: 1001;
+    }
+
+    .mobile-menu-btn.active {
+      border-color: var(--accent);
+    }
+
+    .mobile-menu-btn.active .line:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .mobile-menu-btn.active .line:nth-child(2) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+
+    .line { 
+      width: 20px; 
+      height: 1.5px; 
+      background: var(--text); 
+      margin: 2px 0; 
+      transition: 0.3s; 
+    }
+
+    /* --- Mobile Menu --- */
+    .mobile-menu {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s ease;
+      padding: 2rem;
+    }
+
+    .mobile-menu.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .mobile-menu .nav-link {
+      font-size: 1.5rem;
+      margin: 1rem 0;
+      padding: 0.5rem 0;
+    }
+
+    @media (max-width: 768px) {
+      .mobile-menu-btn {
+        display: flex;
+      }
+    }
+
+    /* --- Back to Home --- */
+    .back-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      margin-bottom: 30px;
+      transition: transform 0.3s;
+    }
+
+    .back-home:hover {
+      transform: translateX(-5px);
+    }
+
+    /* --- Page Header --- */
+    .page-header {
+      margin-bottom: 40px;
+    }
+
+    .page-header h1 {
+      font-size: clamp(2rem, 8vw, 3.5rem);
+      font-weight: 900;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .page-header p {
+      color: #666;
+      font-size: 1.1rem;
+      max-width: 600px;
+    }
+
+    
+
+    body {zoom:0.9;}
+  </style>
+</head>
+<body>
+  <!-- Loading Spinner -->
+  <div class="loading-spinner" id="loadingSpinner">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- News Ticker -->
+  <div class="news-ticker">
+    <div class="ticker-container">
+      <div class="ticker-item" onclick="window.location.href='news.html'">
+        <i class="fas fa-bullhorn"></i>
+        <span>Paragon Announces New Economic Policy Framework</span>
+      </div>
+      <div class="ticker-item" onclick="window.location.href='news.html'">
+        <i class="fas fa-bullhorn"></i>
+        <span>Campaign Gains Momentum Across Delta State</span>
+      </div>
+      <div class="ticker-item" onclick="window.location.href='news.html'">
+        <i class="fas fa-bullhorn"></i>
+        <span>Youth Empowerment Summit Scheduled for February</span>
+      </div>
+      <div class="ticker-item" onclick="window.location.href='news.html'">
+        <i class="fas fa-bullhorn"></i>
+        <span>Paragon Announces New Economic Policy Framework</span>
+      </div>
+      <div class="ticker-item" onclick="window.location.href='news.html'">
+        <i class="fas fa-bullhorn"></i>
+        <span>Campaign Gains Momentum Across Delta State</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="index.html" class="logo">Paragon.</a>
+    
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="gallery.html" class="nav-link active">Gallery</a>
+      <a href="index.html#enterprise" class="nav-link">Enterprise</a>
+      <a href="index.html#news" class="nav-link">News</a>
+      <a href="index.html#volunteer" class="nav-link">Volunteer</a>
+      <a href="index.html#getinvolved" class="nav-link">Donate</a>
+    </div>
+    
+    <div class="mobile-menu-btn" id="menuToggle">
+      <div class="line"></div>
+      <div class="line"></div>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html" class="nav-link" onclick="closeMobileMenu()">Home</a>
+    <a href="gallery.html" class="nav-link" onclick="closeMobileMenu()">Gallery</a>
+    <a href="index.html#enterprise" class="nav-link" onclick="closeMobileMenu()">Enterprise</a>
+    <a href="index.html#news" class="nav-link" onclick="closeMobileMenu()">News</a>
+    <a href="index.html#volunteer" class="nav-link" onclick="closeMobileMenu()">Volunteer</a>
+    <a href="index.html#getinvolved" class="nav-link" onclick="closeMobileMenu()">Donate</a>
+  </div>
+
+  <!-- Gallery Container -->
+  <div class="gallery-container">
+    <a href="index.html" class="back-home">
+      <i class="fas fa-arrow-left"></i>
+      Back to Home
+    </a>
+
+    <div class="page-header">
+      <h1>Campaign Gallery</h1>
+      <p>Explore photos and videos from Hon. Paragon's journey across Delta State</p>
+    </div>
+
+    <!-- Event Filters -->
+    <div class="event-filters" id="eventFilters">
+      <button class="filter-btn all-btn active" data-category="all">All Events</button>
+      <!-- Filters will be populated by JavaScript -->
+    </div>
+
+    <!-- Media Grid -->
+    <div class="media-grid" id="mediaGrid">
+      <!-- Media items will be populated by JavaScript -->
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState" style="display: none;">
+      <i class="fas fa-images"></i>
+      <h3>No media found</h3>
+      <p>Try selecting a different event category</p>
+    </div>
+  </div>
+
+  <!-- Lightbox Modal -->
+  <div class="lightbox-modal" id="lightboxModal">
+    <div class="lightbox-content-wrapper">
+      <button class="close-lightbox" id="closeLightbox">&times;</button>
+      <div class="lightbox-content" id="lightboxContent"></div>
+      <div class="lightbox-info" id="lightboxInfo"></div>
+    </div>
+  </div>
+
+  <script>
+    // Firebase Configuration
+   const firebaseConfig = {
+  apiKey: "AIzaSyA9pipSseb3QaDJynMPkGLG68oKfxU4ulQ",
+  authDomain: "paragon00.firebaseapp.com",
+  projectId: "paragon00",
+  storageBucket: "paragon00.firebasestorage.app",
+  messagingSenderId: "820669281169",
+  appId: "1:820669281169:web:a1b2edfa3f3970d9902030",
+  measurementId: "G-PW92KZK57Q"
+};
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+    // DOM Elements
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const mediaGrid = document.getElementById('mediaGrid');
+    const eventFilters = document.getElementById('eventFilters');
+    const emptyState = document.getElementById('emptyState');
+    const lightboxModal = document.getElementById('lightboxModal');
+    const lightboxContent = document.getElementById('lightboxContent');
+    const lightboxInfo = document.getElementById('lightboxInfo');
+    const closeLightboxBtn = document.getElementById('closeLightbox');
+
+    // State
+    let mediaItems = [];
+    let events = [];
+    let currentFilter = 'all';
+    let urlEventFilter = null;
+
+    // Check URL for event filter parameter
+    function getUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      return {
+        event: params.get('event')
+      };
+    }
+
+    // Show loading spinner
+    function showLoading() {
+      loadingSpinner.style.display = 'block';
+    }
+
+    // Hide loading spinner
+    function hideLoading() {
+      loadingSpinner.style.display = 'none';
+    }
+
+    // Fetch events from Firestore
+    async function fetchEvents() {
+      try {
+        showLoading();
+        const snapshot = await db.collection('events').orderBy('date', 'desc').get();
+        events = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        
+        // Add "All Events" option
+        events.unshift({ id: 'all', name: 'All Events', color: '#c5a028' });
+        
+        renderEventFilters();
+        
+        // Fetch media after events are loaded
+        await fetchMedia();
+      } catch (error) {
+        console.error('Error fetching events:', error);
+        // Fallback to sample data if Firebase fails
+        loadSampleData();
+      } finally {
+        hideLoading();
+      }
+    }
+
+    // Fetch media from Firestore
+    async function fetchMedia() {
+      try {
+        showLoading();
+        const snapshot = await db.collection('gallery').orderBy('uploadDate', 'desc').get();
+        mediaItems = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        
+        renderMediaGrid();
+        
+        // Check if URL has event parameter
+        const urlParams = getUrlParams();
+        if (urlParams.event) {
+          const event = events.find(e => e.id === urlParams.event);
+          if (event) {
+            filterMedia(event.id);
+            // Update active filter button
+            const filterBtn = document.querySelector(`[data-category="${event.id}"]`);
+            if (filterBtn) {
+              document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+              filterBtn.classList.add('active');
+              currentFilter = event.id;
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching media:', error);
+        // Fallback to sample data if Firebase fails
+        loadSampleData();
+      } finally {
+        hideLoading();
+      }
+    }
+
+    // Render event filter buttons
+    function renderEventFilters() {
+      eventFilters.innerHTML = '';
+      events.forEach(event => {
+        const button = document.createElement('button');
+        button.className = `filter-btn ${event.id === 'all' ? 'all-btn' : ''}`;
+        button.textContent = event.name;
+        button.dataset.category = event.id;
+        
+        if (event.id === 'all') {
+          button.classList.add('active');
+        }
+        
+        button.addEventListener('click', () => filterMedia(event.id));
+        eventFilters.appendChild(button);
+      });
+    }
+
+    // Filter media by event
+    function filterMedia(eventId) {
+      currentFilter = eventId;
+      
+      // Update active button
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.category === eventId) {
+          btn.classList.add('active');
+        }
+      });
+      
+      renderMediaGrid();
+    }
+
+    // Render media grid
+    function renderMediaGrid() {
+      const filteredMedia = currentFilter === 'all' 
+        ? mediaItems 
+        : mediaItems.filter(item => item.eventId === currentFilter);
+      
+      if (filteredMedia.length === 0) {
+        emptyState.style.display = 'block';
+        mediaGrid.style.display = 'none';
+        return;
+      }
+      
+      emptyState.style.display = 'none';
+      mediaGrid.style.display = 'grid';
+      mediaGrid.innerHTML = '';
+      
+      filteredMedia.forEach(media => {
+        const mediaItem = document.createElement('div');
+        mediaItem.className = `media-item ${media.type}`;
+        
+        const event = events.find(e => e.id === media.eventId);
+        
+        mediaItem.innerHTML = `
+          ${media.type === 'image' 
+            ? `<img src="${media.thumbnailUrl || media.url}" alt="${media.title}" loading="lazy">`
+            : `<video src="${media.url}" poster="${media.thumbnailUrl}" preload="metadata"></video>
+               <div class="event-tag">${event ? event.name : 'Event'}</div>`
+          }
+          <div class="media-caption">
+            <h4>${media.title}</h4>
+            <p>${media.description || ''}</p>
+            <p><small>${formatDate(media.uploadDate?.toDate() || new Date())}</small></p>
+          </div>
+        `;
+        
+        mediaItem.addEventListener('click', () => openLightbox(media, event));
+        mediaGrid.appendChild(mediaItem);
+      });
+    }
+
+    // Open lightbox with media
+    function openLightbox(media, event) {
+      if (media.type === 'image') {
+        lightboxContent.innerHTML = `
+          <img src="${media.url}" alt="${media.title}" class="lightbox-image">
+        `;
+      } else {
+        lightboxContent.innerHTML = `
+          <video controls autoplay class="lightbox-video">
+            <source src="${media.url}" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        `;
+      }
+      
+      lightboxInfo.innerHTML = `
+        <h3>${media.title}</h3>
+        <p>${media.description || ''}</p>
+        <p><small>Uploaded: ${formatDate(media.uploadDate?.toDate() || new Date())}</small></p>
+        ${event ? `<div class="lightbox-event">${event.name}</div>` : ''}
+      `;
+      
+      lightboxModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Close lightbox
+    function closeLightbox() {
+      // Pause video if playing
+      const video = lightboxContent.querySelector('video');
+      if (video) {
+        video.pause();
+        video.currentTime = 0;
+      }
+      
+      lightboxModal.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+
+    // Format date
+    function formatDate(date) {
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    }
+
+    // Mobile menu functionality
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    function toggleMobileMenu() {
+      menuToggle.classList.toggle('active');
+      mobileMenu.classList.toggle('active');
+      document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : 'auto';
+    }
+
+    function closeMobileMenu() {
+      menuToggle.classList.remove('active');
+      mobileMenu.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+
+    // Event Listeners
+    menuToggle.addEventListener('click', toggleMobileMenu);
+    closeLightboxBtn.addEventListener('click', closeLightbox);
+
+    // Close lightbox on overlay click
+    lightboxModal.addEventListener('click', (e) => {
+      if (e.target === lightboxModal) {
+        closeLightbox();
+      }
+    });
+
+    // Close lightbox on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lightboxModal.classList.contains('active')) {
+        closeLightbox();
+      }
+    });
+
+    // Sample data for fallback
+    function loadSampleData() {
+      events = [
+        { id: 'all', name: 'All Events', color: '#c5a028' },
+        { id: 'townhall-2026', name: 'Townhall 2026', color: '#002d72' },
+        { id: 'campaign-launch', name: 'Campaign Launch', color: '#002d72' },
+        { id: 'youth-summit', name: 'Youth Summit', color: '#002d72' },
+        { id: 'community-outreach', name: 'Community Outreach', color: '#002d72' }
+      ];
+      
+      mediaItems = [
+        {
+          id: '1',
+          type: 'image',
+          url: 'DSC00392.JPG',
+          title: 'National Address',
+          description: 'Hon. Paragon addressing the nation',
+          eventId: 'townhall-2026',
+          uploadDate: { toDate: () => new Date('2026-01-15') }
+        },
+        {
+          id: '2',
+          type: 'image',
+          url: 'DSC00396.JPG',
+          title: 'Campaign Trail',
+          description: 'Meeting supporters across Delta State',
+          eventId: 'campaign-launch',
+          uploadDate: { toDate: () => new Date('2025-12-20') }
+        },
+        {
+          id: '3',
+          type: 'image',
+          url: 'DSC00411.JPG',
+          title: 'Economic Forum',
+          description: 'Discussing economic policies',
+          eventId: 'townhall-2026',
+          uploadDate: { toDate: () => new Date('2025-11-10') }
+        },
+        {
+          id: '4',
+          type: 'image',
+          url: 'paragon2.jpg',
+          title: 'Leadership Summit',
+          description: 'With fellow leaders',
+          eventId: 'youth-summit',
+          uploadDate: { toDate: () => new Date('2025-10-05') }
+        },
+        {
+          id: '5',
+          type: 'image',
+          url: 'DSC00429.JPG',
+          title: 'Community Outreach',
+          description: 'Connecting with local communities',
+          eventId: 'community-outreach',
+          uploadDate: { toDate: () => new Date('2025-09-18') }
+        },
+        {
+          id: '6',
+          type: 'image',
+          url: 'DSC00422.JPG',
+          title: 'Media Briefing',
+          description: 'Press conference on policy initiatives',
+          eventId: 'campaign-launch',
+          uploadDate: { toDate: () => new Date('2025-08-22') }
+        }
+      ];
+      
+      renderEventFilters();
+      renderMediaGrid();
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      // First, try to fetch from Firebase
+      fetchEvents().catch(error => {
+        console.error('Failed to load from Firebase:', error);
+        // If Firebase fails, use sample data
+        loadSampleData();
+      });
+    });
+  </script>
+</body>
+</html>

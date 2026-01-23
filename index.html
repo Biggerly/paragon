@@ -1,0 +1,4322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="Hon. Paragon - Visionary leader and job creator building prosperity through enterprise and principled governance">
+<meta property="og:image" content="paragon2.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Paragon - The Future of Leadership</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Add this in the <head> section -->
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<!-- Add this with your other Firebase scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #0a0a0a;
+      --accent: #002d72;
+      --gold: #c5a028;
+      --gray: #f2f2f2;
+      --container-padding: max(20px, 5vw);
+    }
+
+    * { 
+      margin:0; 
+      padding:0; 
+      box-sizing:border-box; 
+      outline:none; 
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    html {
+      -webkit-text-size-adjust: 100%;
+      scroll-behavior: smooth;
+    }
+    
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background: var(--bg); 
+      color: var(--text); 
+      overflow-x: hidden;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    /* --- Preloader Reveal --- */
+    .reveal { 
+      opacity: 0; 
+      transform: translateY(20px); 
+      transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1); 
+    }
+    .reveal.active { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
+
+    /* --- Nav --- */
+    nav {
+      position: fixed; 
+      top:0; 
+      width:100%; 
+      padding: 1rem var(--container-padding);
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      z-index: 1000; 
+      background: rgba(255,255,255,0.95); 
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      height: 70px;
+    }
+    
+    .logo { 
+      font-weight: 900; 
+      font-size: clamp(1rem, 4vw, 1.2rem); 
+      letter-spacing: -0.5px; 
+      text-transform: uppercase;
+      color: var(--text);
+      text-decoration: none;
+    }
+    
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    
+    .nav-link {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+      transition: color 0.3s;
+      position: relative;
+    }
+    
+    .nav-link:after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      transition: width 0.3s;
+    }
+    
+    .nav-link:hover:after,
+    .nav-link.active:after {
+      width: 100%;
+    }
+    
+    .nav-link:hover {
+      color: var(--accent);
+    }
+    
+    .nav-cta {
+      background: var(--accent);
+      color: white;
+      padding: 0.6rem 1.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s;
+      font-size: 0.9rem;
+    }
+    
+    .nav-cta:hover {
+      background: #001f4d;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 45, 114, 0.2);
+    }
+    
+    /* Sleek Menu Button */
+    .btn-circle {
+      width: 44px; 
+      height: 44px; 
+      border-radius: 50%; 
+      border: 1px solid #ddd;
+      display: none; 
+      flex-direction: column; 
+      justify-content: center; 
+      align-items: center;
+      cursor: pointer; 
+      transition: 0.3s;
+      background: white;
+      z-index: 1001;
+    }
+    
+    .btn-circle.active {
+      border-color: var(--accent);
+    }
+    
+    .btn-circle.active .l:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    
+    .btn-circle.active .l:nth-child(2) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+    
+    .btn-circle:active { 
+      transform: scale(0.95); 
+    }
+    
+    .l { 
+      width: 20px; 
+      height: 1.5px; 
+      background: var(--text); 
+      margin: 2px 0; 
+      transition: 0.3s; 
+    }
+    
+    /* Mobile Menu Overlay */
+    .mobile-menu {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s ease;
+      padding: 2rem;
+    }
+    
+    .mobile-menu.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .mobile-menu .nav-link {
+      font-size: 1.5rem;
+      margin: 1rem 0;
+      padding: 0.5rem 0;
+    }
+    
+    .mobile-menu .nav-cta {
+      margin-top: 2rem;
+      font-size: 1.2rem;
+      padding: 1rem 2rem;
+    }
+
+    /* --- Hero --- */
+    .hero { 
+      min-height: 100vh; 
+      display: flex; 
+      align-items: center; 
+      padding: 100px var(--container-padding) 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero h1 { 
+      font-size: clamp(2.5rem, 15vw, 8rem); 
+      font-weight: 900; 
+      line-height: 1;
+      letter-spacing: -3px;
+      margin-top: 20px;
+    }
+    
+    .hero-img-box { 
+      position: absolute; 
+      right: var(--container-padding); 
+      top: 50%;
+      transform: translateY(-50%);
+      width: min(45vw, 600px); 
+      height: min(60vh, 500px); 
+      z-index: -1; 
+      overflow: hidden; 
+      border-radius: 12px;
+      display: none;
+    }
+    
+    .hero-img-box img { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      filter: grayscale(100%); 
+      transition: 1.5s;
+      transform: scale(1);
+    }
+    
+    .hero:hover .hero-img-box img { 
+      filter: grayscale(0%); 
+      transform: scale(1.05); 
+    }
+
+    /* --- Portfolio Gallery (The Man) --- */
+    .gallery { 
+      padding: 80px var(--container-padding); 
+      display: grid; 
+      grid-template-columns: 1fr;
+      gap: 20px; 
+    }
+    
+    .gallery-item { 
+      width: 100%;
+      height: 300px; 
+      background: var(--gray); 
+      overflow: hidden; 
+      position: relative; 
+      border-radius: 8px;
+    }
+    
+    .gallery-item img { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    
+    .gallery-item:hover img {
+      transform: scale(1.05);
+    }
+
+    /* --- Businesses (Horizontal Sleekness) --- */
+    .biz-section { 
+      background: var(--text); 
+      color: white; 
+      padding: 80px var(--container-padding);
+    }
+    
+    .biz-grid { 
+      display: grid; 
+      grid-template-columns: 1fr;
+      gap: 40px; 
+      margin-top: 40px;
+    }
+    
+    .biz-card { 
+      border-top: 1px solid #333; 
+      padding-top: 20px;
+      padding-bottom: 20px;
+    }
+    
+    .biz-card h3 { 
+      font-size: 0.75rem; 
+      text-transform: uppercase; 
+      color: var(--gold); 
+      letter-spacing: 1.5px;
+      margin-bottom: 10px;
+    }
+    
+    .biz-card p { 
+      font-size: clamp(1.2rem, 4vw, 1.5rem); 
+      font-weight: 300;
+      line-height: 1.4;
+    }
+
+    /* --- News & Socials --- */
+    .social-split { 
+      display: flex; 
+      flex-direction: column;
+      min-height: auto;
+      border-top: 1px solid #eee; 
+    }
+    
+    .news-box { 
+      padding: 60px var(--container-padding); 
+      border-bottom: 1px solid #eee;
+    }
+    
+    .social-box { 
+      padding: 60px var(--container-padding); 
+      display: grid; 
+      grid-template-columns: repeat(2, 1fr); 
+      gap: 15px;
+    }
+    
+    .social-btn { 
+      padding: 20px 15px; 
+      border: 1px solid #eee; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      text-decoration: none; 
+      color: var(--text); 
+      font-weight: 700; 
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+      border-radius: 4px;
+      text-align: center;
+      min-height: 60px;
+    }
+    
+    .social-btn:active {
+      transform: scale(0.98);
+    }
+    
+    .social-btn:hover { 
+      background: var(--accent); 
+      color: white; 
+      border-color: var(--accent); 
+    }
+
+    /* --- Responsive Improvements --- */
+    @media (max-width: 1023px) {
+      .btn-circle {
+        display: flex;
+      }
+      
+      .nav-links {
+        display: none;
+      }
+      
+      .hero-img-box {
+        display: none;
+      }
+      
+      .hero {
+        align-items: flex-end;
+        padding-bottom: 120px;
+      }
+    }
+    
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .hero-img-box {
+        display: block;
+      }
+      
+      .gallery {
+        grid-template-columns: repeat(12, 1fr);
+        gap: 20px;
+      }
+      
+      .gallery-item {
+        height: 400px;
+        grid-column: span 12;
+      }
+      
+      .gallery-item.wide {
+        grid-column: span 12;
+      }
+      
+      .biz-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 40px;
+      }
+      
+      .social-split {
+        flex-direction: row;
+        min-height: 500px;
+      }
+      
+      .news-box {
+        border-bottom: none;
+        border-right: 1px solid #eee;
+        flex: 1;
+      }
+      
+      .social-box {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+      }
+    }
+    
+    @media (min-width: 1024px) {
+      .nav-links {
+        display: flex;
+      }
+      
+      .hero-img-box {
+        display: block;
+      }
+      
+      .hero h1 {
+        font-size: clamp(4rem, 10vw, 10rem);
+        letter-spacing: -5px;
+      }
+      
+      .gallery {
+        grid-template-columns: repeat(12, 1fr);
+        gap: 20px;
+      }
+      
+      .gallery-item {
+        grid-column: span 4;
+        height: 500px;
+      }
+      
+      .gallery-item.wide {
+        grid-column: span 8;
+      }
+      
+      .biz-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      
+      .social-split {
+        flex-direction: row;
+        min-height: 500px;
+      }
+      
+      .news-box {
+        border-bottom: none;
+        border-right: 1px solid #eee;
+        flex: 1;
+      }
+      
+      .social-box {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (max-width: 767px) {
+      nav {
+        padding: 1rem 20px;
+        height: 60px;
+      }
+      
+      .btn-circle {
+        width: 40px;
+        height: 40px;
+      }
+      
+      .hero {
+        min-height: 90vh;
+        padding: 80px 20px 60px;
+      }
+      
+      .hero h1 {
+        letter-spacing: -2px;
+        margin-top: 0;
+      }
+      
+      .hero-img-box {
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        right: 0;
+        opacity: 0.15;
+        border-radius: 0;
+      }
+      
+      .hero-img-box img {
+        filter: grayscale(100%) brightness(0.7);
+      }
+      
+      .gallery, .biz-section, .news-box, .social-box {
+        padding: 60px 20px;
+      }
+      
+      .biz-card {
+        padding: 20px 0;
+      }
+      
+      .mobile-menu .nav-link {
+        font-size: 1rem;
+      }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+      .hero:hover .hero-img-box img {
+        transform: none;
+        filter: grayscale(100%);
+      }
+      
+      .gallery-item:hover img {
+        transform: none;
+      }
+      
+      .btn-circle:hover .l {
+        background: var(--text);
+      }
+      
+      .social-btn:hover {
+        background: transparent;
+        color: var(--text);
+        border-color: #eee;
+      }
+      
+      .social-btn:active {
+        background: var(--accent);
+        color: white;
+        border-color: var(--accent);
+      }
+      
+      .nav-link:hover:after {
+        width: 0;
+      }
+      
+      .nav-cta:hover {
+        transform: none;
+        box-shadow: none;
+      }
+    }
+
+    /* Prevent horizontal scroll */
+    .container {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+    
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+    
+    /* Better touch targets */
+    button, 
+    .btn-circle, 
+    .social-btn,
+    a {
+      touch-action: manipulation;
+    }
+    
+    /* Smooth transitions */
+    * {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    footer { 
+      padding: 40px var(--container-padding); 
+      border-top: 1px solid #eee; 
+      text-align: center;
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+    
+    /* Section IDs for smooth scrolling */
+    section {
+      scroll-margin-top: 80px;
+    }
+
+    /* --- Hero --- */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 0 var(--container-padding);
+  background: var(--bg);
+}
+
+/* Desktop Hero Layout */
+.hero-desktop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4rem;
+  width: 100%;
+}
+
+.hero-content {
+  flex: 1;
+  max-width: 600px;
+}
+
+.hero h1 {
+  font-size: clamp(3.5rem, 8vw, 8rem);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -4px;
+  margin-bottom: 1.5rem;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  font-weight: 300;
+  line-height: 1.5;
+  margin-bottom: 2.5rem;
+  opacity: 0.8;
+  max-width: 500px;
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--accent);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  border: 2px solid var(--accent);
+}
+
+.hero-cta:hover {
+  background: transparent;
+  color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 15px 30px rgba(0, 45, 114, 0.2);
+}
+
+.hero-cta i {
+  font-size: 0.9rem;
+  transition: transform 0.3s;
+}
+
+.hero-cta:hover i {
+  transform: translateX(5px);
+}
+
+/* Desktop Hero Image */
+.hero-img-desktop {
+  flex: 1;
+  max-width: 500px;
+  position: relative;
+}
+
+.hero-img-desktop-inner {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+}
+
+.hero-img-desktop img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%) contrast(110%);
+  transition: all 1s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+.hero-img-desktop:hover img {
+  filter: grayscale(0%) contrast(100%);
+  transform: scale(1.05);
+}
+
+/* Mobile Hero Layout - COMPLETELY REDESIGNED */
+.hero-mobile {
+  display: none;
+  width: 100%;
+  padding-top: 40px;
+}
+
+.mobile-hero-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2.5rem;
+}
+
+.mobile-hero-image {
+  width: 100%;
+  max-width: 400px;
+  height: 300px;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-hero-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  filter: grayscale(0%);
+}
+
+.mobile-hero-text {
+  width: 100%;
+}
+
+.mobile-hero-text h1 {
+  font-size: clamp(3rem, 12vw, 5rem);
+  line-height: 0.9;
+  letter-spacing: -2px;
+  margin-bottom: 1rem;
+}
+
+.mobile-hero-text .hero-subtitle {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  opacity: 0.8;
+}
+
+.mobile-hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--accent);
+  color: white;
+  padding: 0.9rem 1.8rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s;
+}
+
+.mobile-hero-cta:active {
+  transform: scale(0.98);
+}
+
+/* Badge for image */
+.image-badge {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: var(--accent);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  z-index: 2;
+}
+
+/* Remove old hero styles */
+.hero-img-box {
+  display: none;
+}
+
+/* --- Responsive Improvements --- */
+@media (max-width: 1023px) {
+  .btn-circle {
+    display: flex;
+  }
+  
+  .nav-links {
+    display: none;
+  }
+  
+  .hero-desktop {
+    display: none;
+  }
+  
+  .hero-mobile {
+    display: block;
+  }
+  
+  .hero {
+    padding: 0 20px;
+    min-height: 100vh;
+    justify-content: center;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .mobile-hero-image {
+    height: 350px;
+    max-width: 500px;
+  }
+  
+  .mobile-hero-text h1 {
+    font-size: clamp(3.5rem, 10vw, 6rem);
+  }
+  
+  .mobile-hero-text .hero-subtitle {
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .nav-links {
+    display: flex;
+  }
+  
+  .hero-desktop {
+    display: flex;
+  }
+  
+  .hero-mobile {
+    display: none;
+  }
+  
+  .hero {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  nav {
+    padding: 1rem 20px;
+    height: 60px;
+  }
+  
+  .btn-circle {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .hero {
+    padding: 0 15px;
+    min-height: 100vh;
+  }
+  
+  .mobile-hero-image {
+    height: 250px;
+    border-radius: 16px;
+  }
+  
+  .mobile-hero-text h1 {
+    font-size: clamp(2.8rem, 10vw, 4rem);
+    letter-spacing: -1.5px;
+  }
+  
+  .mobile-hero-text .hero-subtitle {
+    font-size: 1rem;
+    margin-bottom: 1.8rem;
+  }
+  
+  .mobile-hero-cta {
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+  }
+  
+  .image-badge {
+    top: 15px;
+    left: 15px;
+    padding: 6px 12px;
+    font-size: 0.7rem;
+  }
+}
+
+/* Very small mobile devices */
+@media (max-width: 480px) {
+  .hero {
+    min-height: 90vh;
+  }
+  
+  .mobile-hero-image {
+    height: 220px;
+  }
+  
+  .mobile-hero-text h1 {
+    font-size: 2.5rem;
+  }
+  
+  .mobile-hero-container {
+    gap: 2rem;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .hero-img-desktop:hover img {
+    transform: none;
+    filter: grayscale(100%) contrast(110%);
+  }
+  
+  .hero-cta:hover {
+    transform: none;
+    background: var(--accent);
+    color: white;
+  }
+  
+  .hero-cta:active {
+    transform: scale(0.98);
+  }
+}
+
+/* ===== CAROUSEL GALLERY SECTION ===== */
+.gallery-section {
+  padding: 100px var(--container-padding);
+  background: var(--bg);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.section-header h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.section-subtitle {
+  color: #666;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+  max-width: 600px;
+}
+
+.category-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s;
+  font-size: 0.9rem;
+}
+
+.category-btn:hover {
+  background: #001f4d;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 45, 114, 0.2);
+}
+
+/* Carousel Container */
+.carousel-container {
+  position: relative;
+  margin-bottom: 4rem;
+}
+
+.carousel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.carousel-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.carousel-title i {
+  color: var(--accent);
+}
+
+.carousel-nav {
+  display: flex;
+  gap: 10px;
+}
+
+.carousel-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  background: white;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.carousel-btn:hover {
+  background: var(--accent);
+  color: white;
+}
+
+.carousel-btn.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.carousel-btn.disabled:hover {
+  background: white;
+  color: var(--accent);
+}
+
+/* Carousel Track */
+.carousel-track {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+  padding: 10px 5px 25px;
+  cursor: grab;
+}
+
+.carousel-track::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.carousel-track.grabbing {
+  cursor: grabbing;
+  scroll-behavior: auto;
+}
+
+/* Carousel Items */
+.carousel-item {
+  flex: 0 0 300px;
+  height: 350px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  background: var(--gray);
+  transition: transform 0.3s;
+}
+
+.carousel-item:hover {
+  transform: translateY(-5px);
+}
+
+.carousel-item img,
+.carousel-item video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.carousel-item.video-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1;
+}
+
+.carousel-item.video-item::after {
+  content: '▶';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 3rem;
+  z-index: 2;
+  opacity: 0.9;
+  transition: opacity 0.3s;
+}
+
+.carousel-item.video-item:hover::after {
+  opacity: 1;
+}
+
+.carousel-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  color: white;
+  padding: 20px;
+  transform: translateY(100%);
+  transition: transform 0.3s;
+}
+
+.carousel-item:hover .carousel-caption {
+  transform: translateY(0);
+}
+
+.carousel-caption h4 {
+  font-size: 1rem;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.carousel-caption p {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.events-modal {
+  background: white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow: hidden;
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.3s;
+}
+
+.close-modal:hover {
+  color: var(--text);
+}
+
+.events-list {
+  padding: 20px;
+  overflow-y: auto;
+  max-height: 60vh;
+}
+
+.event-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 1px solid #eee;
+}
+
+.event-item:hover {
+  background: var(--gray);
+  border-color: var(--accent);
+  transform: translateX(5px);
+}
+
+.event-date {
+  background: var(--accent);
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.event-date .day {
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.event-date .month {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.event-details h4 {
+  font-size: 1rem;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.event-details p {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.event-details .location {
+  font-size: 0.8rem;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Dots Indicator */
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ddd;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.dot.active {
+  background: var(--accent);
+  transform: scale(1.2);
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+  .gallery-section {
+    padding: 60px 20px;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+  
+  .category-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .carousel-item {
+    flex: 0 0 85%;
+    height: 300px;
+  }
+  
+  .carousel-nav {
+    display: none;
+  }
+  
+  .carousel-header {
+    margin-bottom: 1rem;
+  }
+  
+  .events-modal {
+    max-height: 90vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .carousel-item {
+    flex: 0 0 90%;
+    height: 280px;
+  }
+  
+  .event-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+  
+  .event-date {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+
+/* --- Simple Lightbox --- */
+.media-lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+  padding: 20px;
+}
+
+.media-lightbox.active {
+  display: flex;
+}
+
+.lightbox-content-wrapper {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.close-lightbox {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.close-lightbox:hover {
+  background: var(--accent);
+  transform: scale(1.1);
+}
+
+.lightbox-content {
+  width: 100%;
+  height: 100%;
+}
+
+.lightbox-image {
+  width: 100%;
+  height: auto;
+  max-height: 85vh;
+  object-fit: contain;
+  display: block;
+}
+
+.lightbox-video {
+  width: 100%;
+  height: auto;
+  max-height: 85vh;
+  background: #000;
+  outline: none;
+}
+
+.lightbox-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+  color: white;
+  padding: 25px 20px 20px;
+  text-align: center;
+}
+
+.lightbox-caption h4 {
+  font-size: 1.3rem;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.lightbox-caption p {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* ===== ENTERPRISE SECTION ===== */
+.enterprise-gallery {
+  width: 100%;
+  height: 400px;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.enterprise-carousel {
+  display: flex;
+  width: 300%; /* 3 images */
+  height: 100%;
+  animation: slide 20s infinite linear;
+}
+
+.enterprise-carousel img {
+  width: 33.333%; /* Each image takes 1/3 of container */
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.8);
+}
+
+@keyframes slide {
+  0%, 30% { transform: translateX(0); }
+  33%, 63% { transform: translateX(-33.333%); }
+  66%, 96% { transform: translateX(-66.666%); }
+  100% { transform: translateX(0); }
+}
+
+/* Pause animation on hover */
+.enterprise-gallery:hover .enterprise-carousel {
+  animation-play-state: paused;
+}
+
+.enterprise-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.7));
+  display: flex;
+  align-items: flex-end;
+  padding: 2rem;
+  color: white;
+}
+
+.enterprise-overlay h3 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.enterprise-overlay p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* Update biz-grid for 2 columns on mobile */
+.biz-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.biz-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid #eee;
+  position: relative;
+}
+
+.biz-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  border-color: var(--accent);
+}
+
+.biz-card-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.biz-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.biz-card:hover .biz-card-image img {
+  transform: scale(1.05);
+}
+
+.biz-card-content {
+  padding: 1.5rem;
+}
+
+.biz-card h3 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: var(--accent);
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.biz-card .biz-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+  line-height: 1.3;
+}
+
+.biz-card .biz-description {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.biz-card .biz-location {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--accent);
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.biz-card .biz-location i {
+  font-size: 0.9rem;
+}
+
+.biz-card-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: white;
+  padding: 0.7rem 1.2rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s;
+  border: 2px solid var(--accent);
+}
+
+.biz-card-btn:hover {
+  background: transparent;
+  color: var(--accent);
+}
+
+.biz-card-btn i {
+  font-size: 0.8rem;
+  transition: transform 0.3s;
+}
+
+.biz-card-btn:hover i {
+  transform: translateX(3px);
+}
+
+/* Make entire card clickable */
+.biz-card-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .biz-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .enterprise-gallery {
+    height: 500px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .biz-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .enterprise-gallery {
+    height: 400px;
+  }
+  
+  .enterprise-overlay h3 {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .biz-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  
+  .enterprise-gallery {
+    height: 300px;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+  }
+  
+  .enterprise-overlay {
+    padding: 1.5rem;
+  }
+  
+  .enterprise-overlay h3 {
+    font-size: 1.5rem;
+  }
+  
+  .enterprise-overlay p {
+    font-size: 1rem;
+  }
+  
+  .biz-card-image {
+    height: 150px;
+  }
+  
+  .biz-card-content {
+    padding: 1.2rem;
+  }
+  
+  .biz-card .biz-title {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .biz-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .enterprise-gallery {
+    height: 250px;
+  }
+}
+
+
+/* ===== GET INVOLVED SECTION ===== */
+.get-involved {
+  padding: 100px var(--container-padding);
+  background: var(--gray);
+  border-top: 1px solid #eee;
+}
+
+.donation-section,
+.volunteer-section {
+  background: white;
+  padding: 3rem;
+  border-radius: 16px;
+  margin-bottom: 3rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.donation-section h2,
+.volunteer-section h2 {
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  margin-bottom: 1rem;
+}
+
+.section-subtitle {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 2.5rem;
+  max-width: 600px;
+}
+
+/* Donation Options */
+.donation-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.donation-tier {
+  background: white;
+  border: 2px solid #eee;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.donation-tier:hover {
+  transform: translateY(-5px);
+  border-color: var(--accent);
+  box-shadow: 0 15px 30px rgba(0, 45, 114, 0.1);
+}
+
+.donation-tier.highlighted {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+}
+
+.popular-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: white;
+  padding: 6px 15px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.donation-tier h3 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+.amount {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--accent);
+  margin: 1rem 0;
+}
+
+.donation-tier p {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  min-height: 40px;
+}
+
+.donate-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.3s;
+  font-size: 0.95rem;
+}
+
+.donate-btn:hover {
+  background: #001f4d;
+  transform: translateY(-2px);
+}
+
+/* Custom Donation */
+.custom-donation {
+  background: white;
+  border: 2px dashed #ddd;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.custom-donation h4 {
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+.custom-input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.custom-input span {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.custom-input input {
+  padding: 0.8rem 1rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  width: 150px;
+  text-align: center;
+}
+
+.custom-input input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+#customDonateBtn {
+  background: var(--gold);
+  color: var(--text);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+#customDonateBtn:hover {
+  background: #b08c1c;
+  color: white;
+}
+
+.custom-donation small {
+  color: #888;
+  font-size: 0.8rem;
+  display: block;
+  margin-top: 1rem;
+}
+
+/* Volunteer Form */
+.volunteer-form {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 2px solid #eee;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  transition: all 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 45, 114, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Checkbox Group */
+.checkbox-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin-top: 0.5rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background 0.3s;
+}
+
+.checkbox-label:hover {
+  background: #f5f5f5;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+.checkbox-label span {
+  font-weight: normal;
+  font-size: 0.9rem;
+}
+
+/* Form Footer */
+.form-footer {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, var(--accent) 0%, #0047ab 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s;
+}
+
+.submit-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 45, 114, 0.2);
+}
+
+.submit-btn:active {
+  transform: translateY(-1px);
+}
+
+.form-note {
+  color: #666;
+  font-size: 0.85rem;
+  margin-top: 1rem;
+}
+
+/* Form Message */
+.form-message {
+  margin-top: 2rem;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  display: none;
+}
+
+.form-message.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  display: block;
+}
+
+.form-message.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  display: block;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .get-involved {
+    padding: 60px 20px;
+  }
+  
+  .donation-section,
+  .volunteer-section {
+    padding: 2rem;
+  }
+  
+  .donation-options {
+    grid-template-columns: 1fr;
+    max-width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .checkbox-group {
+    grid-template-columns: 1fr;
+  }
+  
+  .custom-input {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+  
+  .custom-input input {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .donation-section,
+  .volunteer-section {
+    padding: 1.5rem;
+  }
+  
+  .amount {
+    font-size: 1rem;
+  }
+  
+  .submit-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ===== PAYMENT MODALS ===== */
+.donation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 4000;
+  padding: 20px;
+}
+
+.donation-modal-content {
+  background: white;
+  border-radius: 16px;
+  padding: 2.5rem;
+  max-width: 450px;
+  width: 100%;
+  position: relative;
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.close-donation-modal {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.3s;
+}
+
+.close-donation-modal:hover {
+  color: var(--accent);
+}
+
+.donation-modal h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+.donation-modal > p {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.donation-form {
+  margin-top: 1.5rem;
+}
+
+.donation-form .form-group {
+  margin-bottom: 1.2rem;
+}
+
+.donation-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.donation-form input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 2px solid #eee;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  transition: all 0.3s;
+}
+
+.donation-form input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 45, 114, 0.1);
+}
+
+.paystack-btn {
+  background: linear-gradient(135deg, #00b35f 0%, #00a356 100%);
+  color: white;
+  border: none;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 1.5rem;
+  transition: all 0.3s;
+}
+
+.paystack-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 179, 95, 0.2);
+}
+
+.paystack-btn:active {
+  transform: translateY(0);
+}
+
+.security-note {
+  text-align: center;
+  margin-top: 1rem;
+  color: #666;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.security-note i {
+  color: #00b35f;
+}
+
+/* Payment Success Modal */
+.payment-success-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 4000;
+  padding: 20px;
+}
+
+.payment-success-content {
+  background: white;
+  border-radius: 16px;
+  padding: 3rem;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  animation: modalSlideIn 0.3s ease;
+}
+
+.success-icon {
+  font-size: 4rem;
+  color: #00b35f;
+  margin-bottom: 1.5rem;
+}
+
+.payment-success-content h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+.payment-success-content > p {
+  color: #666;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.payment-details {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  text-align: left;
+}
+
+.payment-details p {
+  margin: 0.5rem 0;
+  color: #555;
+}
+
+.status-success {
+  color: #00b35f;
+  font-weight: 600;
+  background: #d4edda;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.receipt-note {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+}
+
+.success-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.close-success-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.close-success-btn:hover {
+  background: #001f4d;
+  transform: translateY(-2px);
+}
+
+.email-support {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0.8rem;
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  transition: all 0.3s;
+}
+
+.email-support:hover {
+  background: var(--accent);
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .donation-modal-content,
+  .payment-success-content {
+    padding: 2rem 1.5rem;
+  }
+  
+  .payment-success-content h3 {
+    font-size: 1.5rem;
+  }
+  
+  .success-icon {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .donation-modal-content,
+  .payment-success-content {
+    padding: 1.5rem;
+  }
+  
+  .payment-details {
+    padding: 1rem;
+  }
+  
+  .success-actions {
+    flex-direction: column;
+  }
+}
+
+/* Super compact for very small screens */
+@media (max-height: 600px) {
+  .donation-modal-content,
+  .payment-success-content {
+    padding: 1rem;
+    max-height: 75vh;
+  }
+  
+  .donation-form .form-group {
+    margin-bottom: 0.7rem;
+  }
+  
+  .donation-form input {
+    padding: 0.5rem 0.7rem;
+    font-size: 0.85rem;
+  }
+  
+  .donation-modal h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .payment-success-content h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .payment-details {
+    padding: 0.7rem;
+    margin: 0.8rem 0;
+  }
+  
+  .success-icon {
+    font-size: 2rem;
+    margin-bottom: 0.7rem;
+  }
+}
+
+/* Add these to fix overflow */
+.donation-modal-content,
+.payment-success-content {
+  max-height: 85vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.donation-modal-content::-webkit-scrollbar,
+.payment-success-content::-webkit-scrollbar {
+  width: 5px;
+}
+
+.donation-modal-content::-webkit-scrollbar-track,
+.payment-success-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.donation-modal-content::-webkit-scrollbar-thumb,
+.payment-success-content::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.donation-modal-content::-webkit-scrollbar-thumb:hover,
+.payment-success-content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+
+.gallery-section  {zoom:0.8;}
+
+.biz-section {zoom:0.9}
+
+.donation-modal-content {zoom: 0.8;}
+.payment-success-content {zoom: 0.8;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <a href="#home" class="logo">Paragon.</a>
+      
+      <div class="nav-links">
+  <a href="#home" class="nav-link">Home</a>
+  <a href="#gallery" class="nav-link">Gallery</a>
+  <a href="#enterprise" class="nav-link">Enterprise</a>
+  <a href="#news" class="nav-link">News</a>
+  <a href="#volunteer" class="nav-link">Volunteer</a>
+  <a href="#getinvolved" class="nav-link donate-nav">Donate</a>
+  <a href="#contact" class="nav-cta">Join Movement</a>
+</div>
+      
+      <div class="btn-circle" id="menuToggle" aria-label="Toggle menu">
+        <div class="l"></div>
+        <div class="l"></div>
+      </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#home" class="nav-link" onclick="closeMobileMenu()">Home</a>
+      <a href="#gallery" class="nav-link" onclick="closeMobileMenu()">Gallery</a>
+      <a href="#enterprise" class="nav-link" onclick="closeMobileMenu()">Enterprise</a>
+      
+  <a href="#volunteer" class="nav-link" onclick="closeMobileMenu()">Volunteer</a>
+  <a href="#getinvolved" class="nav-link donate-nav" onclick="closeMobileMenu()">Donate</a>
+      <a href="#news" class="nav-link" onclick="closeMobileMenu()">News</a>
+      <a href="#contact" class="nav-cta" onclick="closeMobileMenu()">Join Movement</a>
+    </div>
+
+  <section class="hero" id="home">
+  <!-- Desktop Hero -->
+  <div class="hero-desktop">
+    <div class="hero-content">
+      <h1 class="reveal">HON.<br>PARAGON</h1>
+      <p class="hero-subtitle reveal">
+        Visionary leader, job creator, and the future our nation deserves. 
+        Building prosperity through enterprise and principled governance.
+      </p>
+      <a href="#contact" class="hero-cta reveal">
+        Join the Movement
+        <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+    
+    <div class="hero-img-desktop reveal">
+      <div class="hero-img-desktop-inner">
+        <!-- <div class="image-badge">Leadership</div> -->
+        <img src="paragon2.jpg" alt="Hon. Paragon - Visionary Leader" loading="lazy">
+      </div>
+    </div>
+  </div>
+  
+  <!-- Mobile Hero - COMPLETELY SEPARATE LAYOUT -->
+  <div class="hero-mobile">
+    <div class="mobile-hero-container">
+      <div class="mobile-hero-image reveal">
+        <!-- <div class="image-badge">Leadership</div> -->
+        <img src="paragon2.jpg" alt="Hon. Paragon - Visionary Leader" loading="eager">
+      </div>
+      
+      <div class="mobile-hero-text">
+        <h1 class="reveal">HON.<br>PARAGON</h1>
+        <p class="hero-subtitle reveal">
+          Visionary leader, job creator, and the future our nation deserves.
+        </p>
+        <a href="#contact" class="mobile-hero-cta reveal">
+          Join the Movement
+          <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+    <section class="gallery-section" id="gallery">
+  <div class="section-header reveal">
+    <div>
+      <h2>Leadership Gallery</h2>
+      <p class="section-subtitle">Explore moments that define Paragon's journey and vision for our nation.</p>
+    </div>
+    <button class="category-btn reveal" id="eventsModalBtn">
+      <i class="fas fa-calendar-alt"></i>
+      View Events & Categories
+    </button>
+  </div>
+
+  <!-- Pictures Carousel -->
+  <!-- Pictures Carousel -->
+<div class="carousel-container">
+  <div class="carousel-header">
+    <h3 class="carousel-title">
+      <i class="fas fa-camera"></i>
+      Photo Gallery
+    </h3>
+    <div class="carousel-nav">
+      <button class="carousel-btn prev-btn" data-carousel="pictures">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <button class="carousel-btn next-btn" data-carousel="pictures">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+  
+  <div class="carousel-track" id="picturesCarousel">
+    <!-- Loading message will show until gallery loads -->
+    <div class="gallery-loading">
+      <i class="fas fa-spinner fa-spin"></i>
+      Loading photos...
+    </div>
+  </div>
+  <div class="carousel-dots" id="picturesDots"></div>
+</div>
+
+<!-- Videos Carousel -->
+<div class="carousel-container">
+  <div class="carousel-header">
+    <h3 class="carousel-title">
+      <i class="fas fa-play-circle"></i>
+      Video Highlights
+    </h3>
+    <div class="carousel-nav">
+      <button class="carousel-btn prev-btn" data-carousel="videos">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <button class="carousel-btn next-btn" data-carousel="videos">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+  
+  <div class="carousel-track" id="videosCarousel">
+    <!-- Loading message will show until gallery loads -->
+    <div class="gallery-loading">
+      <i class="fas fa-spinner fa-spin"></i>
+      Loading videos...
+    </div>
+  </div>
+  <div class="carousel-dots" id="videosDots"></div>
+</div>
+</section>
+
+<!-- Events Modal -->
+<div class="modal-overlay" id="eventsModal">
+  <div class="events-modal">
+    <div class="modal-header">
+      <h3>Events & Categories</h3>
+      <button class="close-modal" id="closeModal">&times;</button>
+    </div>
+    <div class="events-list" id="eventsList">
+      <!-- Events will be added by JavaScript -->
+    </div>
+  </div>
+</div>
+
+<section class="biz-section" id="enterprise">
+  <div class="reveal">
+    <h2 style="font-size: clamp(2rem, 8vw, 3rem); margin-bottom: 1rem;">The Enterprise.</h2>
+    <p style="opacity: 0.6; max-width: 600px; margin-bottom: 2rem;">Before leading a nation, he led industries. Our candidate is a job creator, not just a politician.</p>
+  </div>
+  
+  <!-- Infinity Loop Carousel -->
+  <div class="enterprise-gallery reveal">
+    <div class="enterprise-carousel">
+      <!-- Add your enterprise images here -->
+      <img src="data:image/jpeg;base64,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" alt="Paragon Water Factory ">
+      <img src="data:image/jpeg;base64,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" alt="Paragon Hotel Warri">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMzayAupsdsFQj9HX_-xSBKUiNOq5BtYzJ1A&s" alt="Paragon Construction">
+    </div>
+    <div class="enterprise-overlay">
+      <div>
+        <h3>Building Nigeria's Future</h3>
+        <p>From hospitality to manufacturing, creating opportunities across sectors</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Enterprise Cards Grid -->
+  <div class="biz-grid">
+    <!-- Paragon Water Factory -->
+    <div class="biz-card reveal">
+      <div class="biz-card-image">
+        <img src="waterfactory.png" alt="Paragon Water Factory">
+      </div>
+      <div class="biz-card-content">
+        <h3>01. Paragon Water Factory</h3>
+        <div class="biz-title">Paragon Water Factory</div>
+        <div class="biz-description">Premium bottled water production, providing clean drinking water and creating local employment opportunities.</div>
+        <div class="biz-location">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Warri, Delta State</span>
+        </div>
+        <a href="https://paragonwaterfactory.com" target="_blank" class="biz-card-btn">
+          Visit Website <i class="fas fa-arrow-right"></i>
+        </a>
+        <a href="https://paragonwaterfactory.com" target="_blank" class="biz-card-link" aria-label="Visit Paragon Water Factory website"></a>
+      </div>
+    </div>
+    
+    <!-- Paragon Bakery -->
+    <div class="biz-card reveal">
+      <div class="biz-card-image">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVEYOjrL-y9rcjwM1e1tDbR8bCNGhSZceEFg&s" alt="Paragon Bakery">
+      </div>
+      <div class="biz-card-content">
+        <h3>02. Paragon Bakery</h3>
+        <div class="biz-title">Paragon Bakery</div>
+        <div class="biz-description">Premium baked goods and confectioneries, serving communities with quality food products.</div>
+        <div class="biz-location">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Warri, Delta State</span>
+        </div>
+        <a href="https://paragonbakery.com" target="_blank" class="biz-card-btn">
+          Visit Website <i class="fas fa-arrow-right"></i>
+        </a>
+        <a href="https://paragonbakery.com" target="_blank" class="biz-card-link" aria-label="Visit Paragon Bakery website"></a>
+      </div>
+    </div>
+    
+    <!-- Paragon Hotel Warri -->
+    <div class="biz-card reveal">
+      <div class="biz-card-image">
+        <img src="hotel.png" alt="Paragon Hotel Warri">
+      </div>
+      <div class="biz-card-content">
+        <h3>03. Paragon Hotel and Suite</h3>
+        <div class="biz-title">Paragon Hotel Warri</div>
+        <div class="biz-description">Luxury accommodation and conference facilities in Delta State's economic hub.</div>
+        <div class="biz-location">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Warri, Delta State</span>
+        </div>
+        <a href="https://paragonhotelwarri.com" target="_blank" class="biz-card-btn">
+          Visit Website <i class="fas fa-arrow-right"></i>
+        </a>
+        <a href="https://paragonhotelwarri.com" target="_blank" class="biz-card-link" aria-label="Visit Paragon Hotel Warri website"></a>
+      </div>
+    </div>
+    
+    <!-- Paragon Hotel Ebelle -->
+    <div class="biz-card reveal">
+      <div class="biz-card-image">
+        <img src="https://paragonsuites.vercel.app/caselindex4.jpg" alt="Paragon Hotel Ebelle">
+      </div>
+      <div class="biz-card-content">
+        <h3>04. Paragon Hotel and Suite</h3>
+        <div class="biz-title">Paragon Hotel Ebelle</div>
+        <div class="biz-description">Premier hospitality establishment serving Edo State with luxury accommodations and event spaces.</div>
+        <div class="biz-location">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Ebelle, Edo State</span>
+        </div>
+        <a href="https://paragonsuites.vercel.app" target="_blank" class="biz-card-btn">
+          Visit Website <i class="fas fa-arrow-right"></i>
+        </a>
+        <a href="https://paragonsuites.vercel.app" target="_blank" class="biz-card-link" aria-label="Visit Paragon Hotel Ebelle website"></a>
+      </div>
+    </div>
+    
+    <!-- Paragon Construction -->
+    <div class="biz-card reveal">
+      <div class="biz-card-image">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDZTyv8oPy6OAjjzL3ezk8d9oPdK8kvIMV2w&s" alt="Paragon Construction">
+      </div>
+      <div class="biz-card-content">
+        <h3>05. Paragon construction Company</h3>
+        <div class="biz-title">Paragon Construction</div>
+        <div class="biz-description">Infrastructure development and construction services, building Nigeria's future one project at a time.</div>
+        <div class="biz-location">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Warri, Delta State</span>
+        </div>
+        <a href="https://paragonconstruction.com" target="_blank" class="biz-card-btn">
+          Visit Website <i class="fas fa-arrow-right"></i>
+        </a>
+        <a href="https://paragonconstruction.com" target="_blank" class="biz-card-link" aria-label="Visit Paragon Construction website"></a>
+      </div>
+    </div>
+    
+    <!-- Paragon Welding & Forging -->
+    <div class="biz-card reveal">
+      <div class="biz-card-image">
+        <img src="constuction.png" alt="Paragon Welding & Forging">
+      </div>
+      <div class="biz-card-content">
+        <h3>06. Paragon Welding</h3>
+        <div class="biz-title">Paragon Welding & Forging</div>
+        <div class="biz-description">Industrial metal fabrication and forging services for construction and manufacturing sectors.</div>
+        <div class="biz-location">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Warri, Delta State</span>
+        </div>
+        <a href="https://paragonwelding.com" target="_blank" class="biz-card-btn">
+          Visit Website <i class="fas fa-arrow-right"></i>
+        </a>
+        <a href="https://paragonwelding.com" target="_blank" class="biz-card-link" aria-label="Visit Paragon Welding & Forging website"></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+    <section class="social-split" id="news">
+      <div class="news-box reveal">
+        <h4 style="text-transform: uppercase; font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 2rem;">Latest Briefing</h4>
+        <div style="margin-bottom: 3rem;">
+          <p style="font-size: clamp(1.4rem, 5vw, 1.8rem); font-weight: 700; line-height: 1.3;">Townhall Meeting in the Central District</p>
+          <small style="opacity: 0.7; display: block; margin-top: 10px;">January 15, 2026</small>
+        </div>
+        <a href="#" style="color: var(--accent); font-weight: 700; text-decoration: none; display: inline-block; margin-top: 20px;">View All News →</a>
+      </div>
+      
+      <div class="social-box" id="contact">
+        <a href="#" class="social-btn reveal">TWITTER</a>
+        <a href="https://www.tiktok.com/@hon.paragon" class="social-btn reveal">TIKTOK</a>
+        <a href="https://web.facebook.com/paragon.perfect/" class="social-btn reveal">FACEBOOK</a>
+        <a href="https://www.instagram.com/@honourable.paragon" class="social-btn reveal">INSTAGRAM</a>
+      </div>
+    </section>
+
+    <!-- Update your nav links -->
+     <!-- Add this AFTER the social-split section and BEFORE the footer -->
+
+<section class="get-involved" id="getinvolved">
+  <!-- Donation Section -->
+  <div class="donation-section reveal">
+    <h2>Support Our Campaign</h2>
+    <p class="section-subtitle">Your contribution helps us reach more voters and build a better Nigeria</p>
+    
+    <div class="donation-options">
+      <div class="donation-tier">
+        <h3>Grassroots Supporter</h3>
+        <div class="amount">₦5,000</div>
+        <p>Help us print campaign materials</p>
+        <button class="donate-btn" data-amount="5000">Donate Now</button>
+      </div>
+      
+      <div class="donation-tier highlighted">
+        <div class="popular-badge">Most Popular</div>
+        <h3>Community Builder</h3>
+        <div class="amount">₦25,000</div>
+        <p>Support community outreach programs</p>
+        <button class="donate-btn" data-amount="25000">Donate Now</button>
+      </div>
+      
+      <div class="donation-tier">
+        <h3>Nation Builder</h3>
+        <div class="amount">₦100,000</div>
+        <p>Help fund policy research & development</p>
+        <button class="donate-btn" data-amount="100000">Donate Now</button>
+      </div>
+    </div>
+    
+    <div class="custom-donation">
+      <h4>Custom Amount</h4>
+      <div class="custom-input">
+        <span>₦</span>
+        <input type="number" id="customAmount" placeholder="Enter amount" min="1000">
+        <button id="customDonateBtn">Donate</button>
+      </div>
+      <small>All donations are compliant with campaign finance regulations</small>
+    </div>
+  </div>
+  
+  <!-- Volunteer Form Section -->
+  <div class="volunteer-section reveal" id="volunteer">
+    <h2>Join Our Movement</h2>
+    <p class="section-subtitle">Volunteer your time and skills to help build a better future</p>
+    
+    <form class="volunteer-form" id="volunteerForm" action="https://api.web3forms.com/submit" method="POST">
+      <!-- Web3Forms Setup -->
+      <input type="hidden" name="access_key" value="c63b5a4b-6cf6-402a-8b4f-d2e043a72249">
+      <input type="hidden" name="subject" value="New Volunteer Signup - Paragon Campaign">
+      <input type="hidden" name="from_name" value="Paragon Campaign Website">
+      <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="fullName">Full Name *</label>
+          <input type="text" id="fullName" name="name" required placeholder="John Doe">
+        </div>
+        
+        <div class="form-group">
+          <label for="phone">Phone Number *</label>
+          <input type="tel" id="phone" name="phone" required placeholder="0803 123 4567">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email Address *</label>
+        <input type="email" id="email" name="email" required placeholder="john@example.com">
+      </div>
+      
+      <div class="form-group">
+        <label for="location">Location *</label>
+        <input type="text" id="location" name="location" required placeholder="City, State">
+      </div>
+      
+      <div class="form-group">
+        <label for="skills">Skills & Interests</label>
+        <textarea id="skills" name="skills" rows="3" placeholder="What skills or experience would you like to contribute?"></textarea>
+      </div>
+      
+      <!-- <div class="form-group">
+        <label>How would you like to help? *</label>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" name="help_type[]" value="canvassing">
+            <span>Door-to-Door Canvassing</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="help_type[]" value="phonebank">
+            <span>Phone Banking</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="help_type[]" value="events">
+            <span>Event Support</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="help_type[]" value="socialmedia">
+            <span>Social Media Support</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="help_type[]" value="office">
+            <span>Office Administration</span>
+          </label>
+        </div>
+      </div> -->
+      
+      <div class="form-group">
+        <label for="availability">Availability</label>
+        <select id="availability" name="availability">
+          <option value="">Select availability</option>
+          <option value="weekends">Weekends Only</option>
+          <option value="weekdays">Weekdays Only</option>
+          <option value="evenings">Evenings Only</option>
+          <option value="flexible">Flexible</option>
+          <option value="fulltime">Full Time Volunteer</option>
+        </select>
+      </div>
+      
+      <div class="form-footer">
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-paper-plane"></i>
+          Become a Volunteer
+        </button>
+         <p class="form-note">Adding your name to our volunteer database for future opportunities.</p>
+      </div>
+    </form>
+    
+    <div id="formMessage" class="form-message"></div>
+  </div>
+</section>
+
+
+    <footer>
+      <p>&copy; 2026 Paragon Campaign. All rights reserved.</p>
+    </footer>
+  </div>
+
+<!-- Simple Lightbox for Both Images and Videos -->
+<div class="media-lightbox" id="mediaLightbox">
+  <div class="lightbox-content-wrapper">
+    <button class="close-lightbox" id="closeLightbox">&times;</button>
+    <div class="lightbox-content" id="lightboxContent"></div>
+    <div class="lightbox-caption" id="lightboxCaption"></div>
+  </div>
+</div>
+
+
+<script>
+
+  // Firebase Configuration (Same as in admin panel)
+const firebaseConfig = {
+  apiKey: "AIzaSyA9pipSseb3QaDJynMPkGLG68oKfxU4ulQ",
+  authDomain: "paragon00.firebaseapp.com",
+  projectId: "paragon00",
+  storageBucket: "paragon00.firebasestorage.app",
+  messagingSenderId: "820669281169",
+  appId: "1:820669281169:web:a1b2edfa3f3970d9902030",
+  measurementId: "G-PW92KZK57Q"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+// ===== DONATION FUNCTIONALITY WITH PAYSTACK =====
+// Your Paystack Public Key - Get this from your Paystack dashboard
+const PAYSTACK_PUBLIC_KEY = 'pk_test_8e52e0617749473a599ce7022fdb306790d638e0'; // TEST MODE - Replace with your key
+
+// Donor Information
+let donorInfo = {
+  email: '',
+  name: '',
+  phone: ''
+};
+
+// Initialize donation buttons
+document.querySelectorAll('.donate-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const amount = this.dataset.amount;
+    showDonationForm(amount);
+  });
+});
+
+document.getElementById('customDonateBtn').addEventListener('click', function() {
+  const amount = document.getElementById('customAmount').value;
+  if (amount && amount >= 1000) {
+    showDonationForm(amount);
+  } else {
+    alert('Please enter a valid amount (minimum ₦1,000)');
+  }
+});
+
+// Show donation form to collect donor info
+function showDonationForm(amount) {
+  const modal = document.createElement('div');
+  modal.className = 'donation-modal';
+  modal.innerHTML = `
+    <div class="donation-modal-content">
+      <button class="close-donation-modal">&times;</button>
+      <h3>Complete Your Donation</h3>
+      <p>You're about to donate ₦${Number(amount).toLocaleString()}</p>
+      
+      <div class="donation-form">
+        <div class="form-group">
+          <label for="donorEmail">Email Address *</label>
+          <input type="email" id="donorEmail" required placeholder="your@email.com">
+        </div>
+        
+        <div class="form-group">
+          <label for="donorName">Full Name *</label>
+          <input type="text" id="donorName" required placeholder="Your Name">
+        </div>
+        
+        <div class="form-group">
+          <label for="donorPhone">Phone Number (Optional)</label>
+          <input type="tel" id="donorPhone" placeholder="0803 123 4567">
+        </div>
+        
+        <button class="paystack-btn" data-amount="${amount}">
+          <i class="fas fa-lock"></i>
+          Proceed to Secure Payment
+        </button>
+        
+        <p class="security-note">
+          <i class="fas fa-shield-alt"></i>
+          Your payment is secured by Paystack
+        </p>
+        
+        <p class="privacy-note">
+          By donating, you agree to our <a href="#privacy" style="color: var(--accent);">Privacy Policy</a>
+        </p>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Close modal
+  modal.querySelector('.close-donation-modal').addEventListener('click', () => {
+    document.body.removeChild(modal);
+  });
+  
+  // Close on outside click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      document.body.removeChild(modal);
+    }
+  });
+  
+  // Handle payment
+  modal.querySelector('.paystack-btn').addEventListener('click', function() {
+    const email = document.getElementById('donorEmail').value;
+    const name = document.getElementById('donorName').value;
+    const phone = document.getElementById('donorPhone').value;
+    
+    if (!email || !name) {
+      alert('Please fill in all required fields');
+      return;
+    }
+    
+    donorInfo = { email, name, phone };
+    processPaystackPayment(amount);
+    document.body.removeChild(modal);
+  });
+}
+
+// Process Paystack payment
+function processPaystackPayment(amount) {
+  // Generate unique reference
+  const reference = 'PARAGON_' + Math.floor(Math.random() * 1000000000) + '_' + Date.now();
+  
+  // Configure Paystack
+  const handler = PaystackPop.setup({
+    key: PAYSTACK_PUBLIC_KEY,
+    email: donorInfo.email,
+    amount: amount * 100, // Convert to kobo (100 kobo = 1 naira)
+    currency: 'NGN',
+    ref: reference,
+    metadata: {
+      custom_fields: [
+        {
+          display_name: "Donor Name",
+          variable_name: "donor_name",
+          value: donorInfo.name
+        },
+        {
+          display_name: "Phone Number",
+          variable_name: "phone_number",
+          value: donorInfo.phone || 'Not provided'
+        },
+        {
+          display_name: "Campaign",
+          variable_name: "campaign",
+          value: "Paragon Campaign 2026"
+        }
+      ]
+    },
+    callback: function(response) {
+      // Success handler
+      showPaymentSuccess(response.reference, amount);
+      
+      // Send donor info to your email via Web3Forms (optional)
+      sendDonationToEmail(response.reference, amount);
+    },
+    onClose: function() {
+      // Payment modal closed
+      alert('Payment was not completed. You can try again anytime.');
+    }
+  });
+  
+  handler.openIframe();
+}
+
+// Send donation details to your email (Optional - using Web3Forms)
+async function sendDonationToEmail(reference, amount) {
+  try {
+    const formData = new FormData();
+    formData.append('access_key', 'c63b5a4b-6cf6-402a-8b4f-d2e043a72249'); // Same as volunteer form
+    formData.append('subject', `New Donation - ${reference}`);
+    formData.append('from_name', 'Paragon Campaign Donations');
+    formData.append('donor_name', donorInfo.name);
+    formData.append('donor_email', donorInfo.email);
+    formData.append('donor_phone', donorInfo.phone || 'Not provided');
+    formData.append('amount', `₦${amount}`);
+    formData.append('reference', reference);
+    formData.append('date', new Date().toLocaleString());
+    
+    // Optional: Send to Web3Forms
+    await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      body: formData
+    });
+  } catch (error) {
+    console.log('Email notification optional');
+  }
+}
+
+// Show payment success message
+function showPaymentSuccess(reference, amount) {
+  const successModal = document.createElement('div');
+  successModal.className = 'payment-success-modal';
+  successModal.innerHTML = `
+    <div class="payment-success-content">
+      <div class="success-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h3>Thank You for Your Donation!</h3>
+      <p>Your donation of <strong>₦${Number(amount).toLocaleString()}</strong> has been received.</p>
+      
+      <div class="payment-details">
+        <p><strong>Reference:</strong> ${reference}</p>
+        <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+        <p><strong>Status:</strong> <span class="status-success">Completed</span></p>
+      </div>
+      
+      <p class="receipt-note">
+        A receipt has been sent to ${donorInfo.email}
+      </p>
+      
+      <div class="success-actions">
+        <button class="close-success-btn">Continue to Campaign</button>
+        <a href="mailto:donations@paragoncampaign.org?subject=Donation%20Receipt%20${reference}" class="email-support">
+          <i class="fas fa-envelope"></i>
+          Email Support
+        </a>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(successModal);
+  
+  // Close success modal
+  successModal.querySelector('.close-success-btn').addEventListener('click', () => {
+    document.body.removeChild(successModal);
+  });
+}
+
+// Format phone number
+document.addEventListener('input', function(e) {
+  if (e.target.id === 'donorPhone' || e.target.id === 'phone') {
+    let value = e.target.value.replace(/\D/g, '');
+    
+    if (value.length > 0) {
+      if (value.length <= 4) {
+        value = value;
+      } else if (value.length <= 7) {
+        value = value.slice(0, 4) + ' ' + value.slice(4);
+      } else {
+        value = value.slice(0, 4) + ' ' + value.slice(4, 7) + ' ' + value.slice(7, 11);
+      }
+    }
+    
+    e.target.value = value;
+  }
+});
+
+// Process Paystack payment
+function processPaystackPayment(amount) {
+  // Generate unique reference
+  const reference = 'PARAGON_' + Math.floor(Math.random() * 1000000000) + '_' + Date.now();
+  
+  // Configure Paystack
+  const handler = PaystackPop.setup({
+    key: PAYSTACK_PUBLIC_KEY,
+    email: donorInfo.email,
+    amount: amount * 100, // Convert to kobo (100 kobo = 1 naira)
+    currency: 'NGN',
+    ref: reference,
+    metadata: {
+      custom_fields: [
+        {
+          display_name: "Donor Name",
+          variable_name: "donor_name",
+          value: donorInfo.name
+        },
+        {
+          display_name: "Phone Number",
+          variable_name: "phone_number",
+          value: donorInfo.phone || 'Not provided'
+        },
+        {
+          display_name: "Campaign",
+          variable_name: "campaign",
+          value: "Paragon Campaign 2026"
+        }
+      ]
+    },
+    callback: function(response) {
+      // Success handler
+      showPaymentSuccess(response.reference, amount);
+      
+      // Here you would typically send the payment details to your server
+      // recordPayment(response, amount, donorInfo);
+    },
+    onClose: function() {
+      // Payment modal closed
+      alert('Payment was not completed. You can try again anytime.');
+    }
+  });
+  
+  handler.openIframe();
+}
+
+// Show payment success message
+function showPaymentSuccess(reference, amount) {
+  const successModal = document.createElement('div');
+  successModal.className = 'payment-success-modal';
+  successModal.innerHTML = `
+    <div class="payment-success-content">
+      <div class="success-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h3>Thank You for Your Donation!</h3>
+      <p>Your donation of <strong>₦${Number(amount).toLocaleString()}</strong> has been received.</p>
+      
+      <div class="payment-details">
+        <p><strong>Reference:</strong> ${reference}</p>
+        <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+        <p><strong>Status:</strong> <span class="status-success">Completed</span></p>
+      </div>
+      
+      <p class="receipt-note">
+        A receipt has been sent to ${donorInfo.email}
+      </p>
+      
+      <div class="success-actions">
+        <button class="close-success-btn">Continue to Campaign</button>
+        <a href="mailto:donations@paragoncampaign.org?subject=Donation%20Receipt%20${reference}" class="email-support">
+          <i class="fas fa-envelope"></i>
+          Email Support
+        </a>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(successModal);
+  
+  // Close success modal
+  successModal.querySelector('.close-success-btn').addEventListener('click', () => {
+    document.body.removeChild(successModal);
+  });
+}
+
+// Optional: Send payment details to your server
+async function recordPayment(paymentResponse, amount, donorInfo) {
+  try {
+    const response = await fetch('https://your-backend.com/api/record-donation', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        reference: paymentResponse.reference,
+        amount: amount,
+        donorEmail: donorInfo.email,
+        donorName: donorInfo.name,
+        donorPhone: donorInfo.phone,
+        timestamp: new Date().toISOString(),
+        status: 'completed'
+      })
+    });
+    
+    const data = await response.json();
+    console.log('Payment recorded:', data);
+  } catch (error) {
+    console.error('Error recording payment:', error);
+  }
+}
+
+// Format phone number
+const phoneInput = document.getElementById('donorPhone');
+if (phoneInput) {
+  phoneInput.addEventListener('input', function(e) {
+    let value = this.value.replace(/\D/g, '');
+    
+    if (value.length > 0) {
+      if (value.length <= 4) {
+        value = value;
+      } else if (value.length <= 7) {
+        value = value.slice(0, 4) + ' ' + value.slice(4);
+      } else {
+        value = value.slice(0, 4) + ' ' + value.slice(4, 7) + ' ' + value.slice(7, 11);
+      }
+    }
+    
+    this.value = value;
+  });
+}
+
+// ===== VOLUNTEER FORM SUBMISSION =====
+const volunteerForm = document.getElementById('volunteerForm');
+const formMessage = document.getElementById('formMessage');
+
+volunteerForm.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  // Get submit button
+  const submitBtn = this.querySelector('.submit-btn');
+  const originalText = submitBtn.innerHTML;
+  
+  // Show loading state
+  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+  submitBtn.disabled = true;
+  
+  try {
+    const formData = new FormData(this);
+    
+    // Send to Web3Forms
+    const response = await fetch(this.action, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      // Show success message
+      formMessage.className = 'form-message success';
+      formMessage.innerHTML = `
+        <i class="fas fa-check-circle"></i>
+        <h3>Thank You!</h3>
+        <p>Your volunteer application has been received. We'll contact you within 48 hours.</p>
+      `;
+      
+      // Reset form
+      volunteerForm.reset();
+      
+      // Scroll to message
+      formMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+      throw new Error(result.message || 'Submission failed');
+    }
+  } catch (error) {
+    // Show error message
+    formMessage.className = 'form-message error';
+    formMessage.innerHTML = `
+      <i class="fas fa-exclamation-circle"></i>
+      <h3>Submission Failed</h3>
+      <p>${error.message}. Please try again or contact us directly.</p>
+    `;
+    
+    formMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } finally {
+    // Reset button
+    submitBtn.innerHTML = originalText;
+    submitBtn.disabled = false;
+  }
+});
+
+// ===== PHONE NUMBER FORMATTING =====
+// const phoneInput = document.getElementById('phone');
+// if (phoneInput) {
+//   phoneInput.addEventListener('input', function(e) {
+//     let value = this.value.replace(/\D/g, '');
+    
+//     if (value.length > 0) {
+//       // Format as Nigerian phone number: 0803 123 4567
+//       if (value.length <= 4) {
+//         value = value;
+//       } else if (value.length <= 7) {
+//         value = value.slice(0, 4) + ' ' + value.slice(4);
+//       } else {
+//         value = value.slice(0, 4) + ' ' + value.slice(4, 7) + ' ' + value.slice(7, 11);
+//       }
+//     }
+    
+//     this.value = value;
+//   });
+// }
+
+// ===== FORM VALIDATION ENHANCEMENT =====
+volunteerForm.addEventListener('input', function(e) {
+  const target = e.target;
+  
+  // Real-time validation
+  if (target.required && target.value.trim() === '') {
+    target.style.borderColor = '#ff4444';
+  } else {
+    target.style.borderColor = '#eee';
+  }
+  
+  // Email validation
+  if (target.type === 'email' && target.value) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(target.value)) {
+      target.style.borderColor = '#ff4444';
+    } else {
+      target.style.borderColor = '#4CAF50';
+    }
+  }
+});
+
+    // Make enterprise cards clickable
+document.querySelectorAll('.biz-card').forEach(card => {
+  card.addEventListener('click', function(e) {
+    // Don't trigger if clicking the button
+    if (e.target.closest('.biz-card-btn')) return;
+    
+    // Find the website link in the card
+    const link = this.querySelector('.biz-card-btn');
+    if (link && link.href) {
+      window.open(link.href, '_blank');
+    }
+  });
+  
+  // Add pointer cursor to entire card
+  card.style.cursor = 'pointer';
+});
+
+    // ===== SIMPLE LIGHTBOX ELEMENTS =====
+const mediaLightbox = document.getElementById('mediaLightbox');
+const closeLightboxBtn = document.getElementById('closeLightbox');
+const lightboxContent = document.getElementById('lightboxContent');
+const lightboxCaption = document.getElementById('lightboxCaption');
+
+// ===== SIMPLE LIGHTBOX FUNCTIONS =====
+function openMediaLightbox(type, src, title, info, category) {
+  if (type === 'image') {
+    lightboxContent.innerHTML = `
+      <img src="${src}" alt="${title}" class="lightbox-image">
+    `;
+  } else if (type === 'video') {
+    lightboxContent.innerHTML = `
+      <video controls autoplay class="lightbox-video">
+        <source src="${src}" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    `;
+  }
+  
+  lightboxCaption.innerHTML = `
+    <h4>${title}</h4>
+    <p>${info} • ${category}</p>
+  `;
+  
+  mediaLightbox.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  // Pause any playing video
+  const video = lightboxContent.querySelector('video');
+  if (video) {
+    video.pause();
+    video.currentTime = 0;
+  }
+  
+  mediaLightbox.classList.remove('active');
+  document.body.style.overflow = 'auto';
+}
+
+// ===== MOBILE MENU FUNCTIONALITY =====
+const menuToggle = document.getElementById('menuToggle');
+const mobileMenu = document.getElementById('mobileMenu');
+
+function toggleMobileMenu() {
+  menuToggle.classList.toggle('active');
+  mobileMenu.classList.toggle('active');
+  document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : 'auto';
+}
+
+function closeMobileMenu() {
+  menuToggle.classList.remove('active');
+  mobileMenu.classList.remove('active');
+  document.body.style.overflow = 'auto';
+}
+
+menuToggle.addEventListener('click', toggleMobileMenu);
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', function(event) {
+  const isClickInsideMenu = mobileMenu.contains(event.target);
+  const isClickOnToggle = menuToggle.contains(event.target);
+  
+  if (!isClickInsideMenu && !isClickOnToggle && mobileMenu.classList.contains('active')) {
+    closeMobileMenu();
+  }
+});
+
+// Close mobile menu on escape key
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape' && mobileMenu.classList.contains('active')) {
+    closeMobileMenu();
+  }
+});
+
+// ===== SMOOTH SCROLLING =====
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    e.preventDefault();
+    
+    const targetId = this.getAttribute('href');
+    if (targetId === '#') return;
+    
+    const targetElement = document.querySelector(targetId);
+    if (targetElement) {
+      window.scrollTo({
+        top: targetElement.offsetTop - 70,
+        behavior: 'smooth'
+      });
+      
+      // Close mobile menu if open
+      if (mobileMenu.classList.contains('active')) {
+        closeMobileMenu();
+      }
+    }
+  });
+});
+
+// ===== ACTIVE NAV LINK HIGHLIGHTING =====
+const sections = document.querySelectorAll('section');
+const navLinks = document.querySelectorAll('.nav-link');
+
+function highlightNavLink() {
+  let scrollPos = window.scrollY + 100;
+  
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop;
+    const sectionHeight = section.clientHeight;
+    const sectionId = section.getAttribute('id');
+    
+    if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${sectionId}`) {
+          link.classList.add('active');
+        }
+      });
+    }
+  });
+}
+
+window.addEventListener('scroll', highlightNavLink);
+
+// ===== REVEAL ANIMATIONS =====
+const observerOptions = { 
+  threshold: 0.1,
+  rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('active');
+    }
+  });
+}, observerOptions);
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ===== HERO IMAGE INTERACTION =====
+const hero = document.querySelector('.hero');
+const heroImg = document.querySelector('.hero-img-box img');
+
+if (window.innerWidth > 768 && heroImg) {
+  hero.addEventListener('mousemove', (e) => {
+    const x = (e.clientX / window.innerWidth - 0.5) * 20;
+    const y = (e.clientY / window.innerHeight - 0.5) * 20;
+    heroImg.style.transform = `scale(1.1) translate(${x}px, ${y}px)`;
+  });
+  
+  hero.addEventListener('mouseleave', () => {
+    heroImg.style.transform = 'scale(1) translate(0, 0)';
+  });
+}
+
+// ===== LAZY LOADING =====
+if ('IntersectionObserver' in window) {
+  const imageObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        if (img.dataset.src) {
+          img.src = img.dataset.src;
+          img.removeAttribute('data-src');
+        }
+        imageObserver.unobserve(img);
+      }
+    });
+  }, { rootMargin: '50px' });
+  
+  document.querySelectorAll('img[data-src]').forEach(img => imageObserver.observe(img));
+}
+
+// ===== DATA =====
+// ===== SIMPLE FIREBASE GALLERY LOADING =====
+let carouselData = {
+  pictures: [],
+  videos: []
+};
+
+// Simple function to load gallery from Firebase
+async function loadGalleryFromFirebase() {
+  try {
+    console.log('Loading gallery from Firebase...');
+    
+    // 1. Load Pictures
+    const picturesSnapshot = await db.collection('gallery')
+      .where('type', '==', 'image')
+      .get();
+    
+    carouselData.pictures = [];
+    picturesSnapshot.forEach(doc => {
+      const data = doc.data();
+      carouselData.pictures.push({
+        id: doc.id,
+        src: data.url,
+        title: data.title || 'Gallery Image',
+        date: data.uploadDate ? 
+               data.uploadDate.toDate().toLocaleDateString() : 'Recent',
+        category: data.category || 'Gallery'
+      });
+    });
+    
+    // 2. Load Videos
+    const videosSnapshot = await db.collection('gallery')
+      .where('type', '==' , 'video')
+      .get();
+    
+    carouselData.videos = [];
+    videosSnapshot.forEach(doc => {
+      const data = doc.data();
+      carouselData.videos.push({
+        id: doc.id,
+        src: data.url,
+        poster: data.thumbnailUrl || data.url,
+        title: data.title || 'Gallery Video',
+        duration: data.duration || '2:30',
+        category: data.category || 'Gallery'
+      });
+    });
+    
+    console.log('Loaded from Firebase:', carouselData);
+    
+    // 3. Call your existing initializeCarousels function
+    initializeCarousels();
+    
+  } catch (error) {
+    console.error('Error loading from Firebase:', error);
+    // Fallback: Keep carousels empty or show message
+    carouselData.pictures = [];
+    carouselData.videos = [];
+    initializeCarousels();
+  }
+}
+
+// const eventsData = [
+//   {
+//     "id": "united-front-2026",
+//     "title": "A United Front of Visionaries",
+//     "date": { "day": "18", "month": "JAN" },
+//     "year": "2026",
+//     "location": "Delta State, Nigeria",
+//     "description": "Hon. Paragon standing with Senator Joseph Ikpea and Leader Pedro Esangbedo.",
+//     "category": "Leadership Quote"
+// },
+// {
+//     "id": "avenue-baptist-donation-2026",
+//     "title": "Avenue Baptist Church Support",
+//     "date": { "day": "20", "month": "JAN" },
+//     "year": "2026",
+//     "location": "Avenue Baptist Church",
+//     "description": "A humble donation to support the House of God and the growth of the community.",
+//     "category": "Faith & Community"
+// },
+//   {
+//     "id": "ebele-rice-distribution-2025",
+//     "title": "Hon. Paragon Christmas Outreach 2025",
+//     "date": { "day": "22-26", "month": "DEC" },
+//     "year": "2025",
+//     "location": "Ebele Community, Edo State",
+//     "description": "5 days of consistent distribution of truckloads of rice to support the masses.",
+//     "category": "Grassroots Impact"
+// }
+// ];
+
+// Remove or comment out the current eventsData array
+// const eventsData = [ ... ];
+
+// Function to load events from Firebase
+async function loadEventsFromFirebase() {
+  try {
+    // Show loading state
+    const eventsList = document.getElementById('eventsList');
+    eventsList.innerHTML = `
+      <div style="text-align: center; padding: 2rem;">
+        <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: var(--accent); margin-bottom: 1rem;"></i>
+        <p>Loading events...</p>
+      </div>
+    `;
+    
+    // Get events from Firestore
+    const snapshot = await db.collection('events')
+      .orderBy('date', 'desc')
+      .get();
+    
+    const eventsData = [];
+    
+    snapshot.docs.forEach(doc => {
+      const event = {
+        id: doc.id,
+        ...doc.data()
+      };
+      
+      // Convert Firestore timestamp to Date
+      let eventDate;
+      if (event.date && event.date.toDate) {
+        eventDate = event.date.toDate();
+      } else if (event.date) {
+        eventDate = new Date(event.date);
+      } else {
+        eventDate = new Date();
+      }
+      
+      // Format date for display
+      const day = eventDate.getDate();
+      const month = eventDate.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+      const year = eventDate.getFullYear();
+      
+      eventsData.push({
+        id: doc.id,
+        title: event.name || 'Event',
+        date: { day, month },
+        year: year.toString(),
+        location: event.location || 'Location not specified',
+        description: event.description || 'No description available',
+        category: 'Event',
+        originalDate: eventDate
+      });
+    });
+    
+    // Populate events list
+    populateEventsList(eventsData);
+    
+  } catch (error) {
+    console.error('Error loading events:', error);
+    const eventsList = document.getElementById('eventsList');
+    eventsList.innerHTML = `
+      <div style="text-align: center; padding: 2rem; color: #666;">
+        <i class="fas fa-exclamation-triangle" style="font-size: 1.5rem; margin-bottom: 1rem;"></i>
+        <p>Unable to load events</p>
+        <small style="display: block; margin-top: 0.5rem;">${error.message}</small>
+      </div>
+    `;
+  }
+}
+
+// Function to populate events list
+function populateEventsList(eventsData) {
+  const eventsList = document.getElementById('eventsList');
+  
+  if (!eventsData || eventsData.length === 0) {
+    eventsList.innerHTML = `
+      <div style="text-align: center; padding: 3rem; color: #666;">
+        <i class="fas fa-calendar-plus" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+        <p>No upcoming events</p>
+        <small style="display: block; margin-top: 0.5rem;">Check back soon for campaign events!</small>
+      </div>
+    `;
+    return;
+  }
+  
+  eventsList.innerHTML = '';
+  
+  eventsData.forEach(event => {
+    const eventEl = document.createElement('div');
+    eventEl.className = 'event-item';
+    eventEl.dataset.category = event.category.toLowerCase();
+    eventEl.dataset.id = event.id;
+    
+    // Format date display
+    const dateDisplay = event.date.day;
+    const monthDisplay = event.date.month;
+    
+    eventEl.innerHTML = `
+      <div class="event-date" style="background: ${event.color || 'var(--accent)'};">
+        <span class="day">${dateDisplay}</span>
+        <span class="month">${monthDisplay}</span>
+      </div>
+      <div class="event-details">
+        <h4>${event.title}</h4>
+        <p>${event.description}</p>
+        <div class="location">
+          <i class="fas fa-map-marker-alt"></i>
+          ${event.location}
+        </div>
+        ${event.year ? `<small style="color: #888; margin-top: 5px; display: block;">${event.year}</small>` : ''}
+      </div>
+    `;
+    
+    // Add click event to filter gallery by this event
+   eventEl.addEventListener('click', () => {
+  filterGalleryByEvent(event.id);
+  closeModal();
+});
+    
+    eventsList.appendChild(eventEl);
+  });
+}
+
+// Update the openModal function
+function openModal() {
+  eventsModal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  
+  // Refresh events from Firebase each time modal opens
+  loadEventsFromFirebase();
+}
+// ===== LIGHTBOX AND VIDEO PLAYER ELEMENTS =====
+
+// ===== CAROUSEL FUNCTIONS =====
+function initializeCarousels() {
+  // Get carousel elements
+  const picturesCarousel = document.getElementById('picturesCarousel');
+  const picturesDots = document.getElementById('picturesDots');
+  const videosCarousel = document.getElementById('videosCarousel');
+  const videosDots = document.getElementById('videosDots');
+  
+  // Clear any existing content
+  picturesCarousel.innerHTML = '';
+  picturesDots.innerHTML = '';
+  videosCarousel.innerHTML = '';
+  videosDots.innerHTML = '';
+  
+  // Pictures Carousel
+  carouselData.pictures.forEach((item, index) => {
+    // Create picture item
+    const itemEl = document.createElement('div');
+    itemEl.className = 'carousel-item';
+    itemEl.innerHTML = `
+      <img src="${item.src}" alt="${item.title}" loading="lazy">
+      <div class="carousel-caption">
+        <h4>${item.title}</h4>
+        <p>${item.date} • ${item.category}</p>
+      </div>
+    `;
+    
+    // Add click event for lightbox
+    itemEl.addEventListener('click', () => {
+      openMediaLightbox('image', item.src, item.title, item.date, item.category);
+    });
+    
+    picturesCarousel.appendChild(itemEl);
+    
+    // Create dot
+    const dot = document.createElement('div');
+    dot.className = `dot ${index === 0 ? 'active' : ''}`;
+    dot.dataset.index = index;
+    dot.addEventListener('click', () => scrollToSlide('pictures', index));
+    picturesDots.appendChild(dot);
+  });
+  
+  // Videos Carousel
+  carouselData.videos.forEach((item, index) => {
+    // Create video item
+    const itemEl = document.createElement('div');
+    itemEl.className = 'carousel-item video-item';
+    itemEl.innerHTML = `
+      <img src="${item.poster}" alt="${item.title}" loading="lazy">
+      <div class="carousel-caption">
+        <h4>${item.title}</h4>
+        <p>${item.duration} • ${item.category}</p>
+      </div>
+    `;
+    
+    // Add click event for video player
+    itemEl.addEventListener('click', () => {
+      openMediaLightbox('video', item.src, item.title, item.duration, item.category);
+    });
+    
+    videosCarousel.appendChild(itemEl);
+    
+    // Create dot
+    const dot = document.createElement('div');
+    dot.className = `dot ${index === 0 ? 'active' : ''}`;
+    dot.dataset.index = index;
+    dot.addEventListener('click', () => scrollToSlide('videos', index));
+    videosDots.appendChild(dot);
+  });
+  
+  // Initialize events list FROM FIREBASE
+  loadEventsFromFirebase();
+}
+
+function setupMediaControls() {
+  // This function can be used for any additional media controls setup
+  console.log('Media controls setup complete');
+}
+
+async function filterGalleryByEvent(eventId) {
+  try {
+    console.log('Filtering gallery for event ID:', eventId);
+    
+    const picturesCarousel = document.getElementById('picturesCarousel');
+    const videosCarousel = document.getElementById('videosCarousel');
+    
+    // Show loading
+    picturesCarousel.innerHTML = `
+      <div style="flex: 0 0 300px; height: 350px; display: flex; align-items: center; justify-content: center; color: #666; border-radius: 12px;">
+        <div style="text-align: center;">
+          <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+          <p>Loading event media...</p>
+        </div>
+      </div>
+    `;
+    
+    videosCarousel.innerHTML = `
+      <div style="flex: 0 0 300px; height: 350px; display: flex; align-items: center; justify-content: center; color: #666; border-radius: 12px;">
+        <div style="text-align: center;">
+          <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+          <p>Loading event videos...</p>
+        </div>
+      </div>
+    `;
+    
+    // First, let's check what events exist
+    console.log('Checking events collection...');
+    const eventsSnapshot = await db.collection('events').get();
+    console.log('Total events in database:', eventsSnapshot.size);
+    eventsSnapshot.forEach(doc => {
+      console.log('Event found:', doc.id, doc.data());
+    });
+    
+    // Now check the gallery collection structure
+    console.log('Checking gallery collection structure...');
+    const gallerySample = await db.collection('gallery').limit(1).get();
+    if (!gallerySample.empty) {
+      const sampleDoc = gallerySample.docs[0];
+      console.log('Gallery document sample:', sampleDoc.id, sampleDoc.data());
+      console.log('Sample eventId field:', sampleDoc.data().eventId);
+    } else {
+      console.log('Gallery collection is empty');
+    }
+    
+    // Now try the query
+    console.log('Querying gallery for eventId:', eventId);
+    const mediaSnapshot = await db.collection('gallery')
+      .where('eventId', '==', eventId)
+      .orderBy('uploadDate', 'desc')
+      .get();
+    
+    console.log('Query results:', mediaSnapshot.size, 'documents found');
+    
+    // Clear and repopulate
+    picturesCarousel.innerHTML = '';
+    videosCarousel.innerHTML = '';
+    
+    let picturesCount = 0;
+    let videosCount = 0;
+    
+    mediaSnapshot.docs.forEach(doc => {
+      const media = {
+        id: doc.id,
+        ...doc.data()
+      };
+      
+      console.log('Media found:', media);
+      
+      const uploadDate = media.uploadDate?.toDate ? 
+        media.uploadDate.toDate() : 
+        new Date(media.uploadDate);
+      
+      const formattedDate = uploadDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+      
+      const itemEl = document.createElement('div');
+      
+      if (media.type === 'image') {
+        itemEl.className = 'carousel-item';
+        itemEl.innerHTML = `
+          <img src="${media.url}" alt="${media.title}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
+          <div class="carousel-caption">
+            <h4>${media.title}</h4>
+            <p>${formattedDate}</p>
+          </div>
+        `;
+        itemEl.addEventListener('click', () => {
+          openMediaLightbox('image', media.url, media.title, formattedDate, 'Event');
+        });
+        picturesCarousel.appendChild(itemEl);
+        picturesCount++;
+      } else if (media.type === 'video') {
+        itemEl.className = 'carousel-item video-item';
+        itemEl.innerHTML = `
+          <img src="${media.url}" alt="${media.title}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
+          <div class="carousel-caption">
+            <h4>${media.title}</h4>
+            <p>Video • ${formattedDate}</p>
+          </div>
+        `;
+        itemEl.addEventListener('click', () => {
+          openMediaLightbox('video', media.url, media.title, formattedDate, 'Event');
+        });
+        videosCarousel.appendChild(itemEl);
+        videosCount++;
+      }
+    });
+    
+    // Handle empty states
+    if (picturesCount === 0) {
+      picturesCarousel.innerHTML = `
+        <div style="flex: 0 0 300px; height: 350px; display: flex; align-items: center; justify-content: center; color: #666; border: 2px dashed #eee; border-radius: 12px;">
+          <div style="text-align: center; padding: 2rem;">
+            <i class="fas fa-images" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+            <p>No pictures for this event</p>
+          </div>
+        </div>
+      `;
+    }
+    
+    if (videosCount === 0) {
+      videosCarousel.innerHTML = `
+        <div style="flex: 0 0 300px; height: 350px; display: flex; align-items: center; justify-content: center; color: #666; border: 2px dashed #eee; border-radius: 12px;">
+          <div style="text-align: center; padding: 2rem;">
+            <i class="fas fa-video" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+            <p>No videos for this event</p>
+          </div>
+        </div>
+      `;
+    }
+    
+    closeModal();
+    document.getElementById('gallery').scrollIntoView({ behavior: 'smooth' });
+    
+  } catch (error) {
+    console.error('Error filtering gallery:', error);
+    console.error('Error details:', error.message, error.code);
+    
+    // Show error in carousels
+    const picturesCarousel = document.getElementById('picturesCarousel');
+    const videosCarousel = document.getElementById('videosCarousel');
+    
+    picturesCarousel.innerHTML = `
+      <div style="flex: 0 0 300px; height: 350px; display: flex; align-items: center; justify-content: center; color: #666; border-radius: 12px;">
+        <div style="text-align: center;">
+          <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+          <p>Failed to load media</p>
+          <small>Error: ${error.message}</small>
+        </div>
+      </div>
+    `;
+    
+    videosCarousel.innerHTML = `
+      <div style="flex: 0 0 300px; height: 350px; display: flex; align-items: center; justify-content: center; color: #666; border-radius: 12px;">
+        <div style="text-align: center;">
+          <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+          <p>Failed to load media</p>
+          <small>Error: ${error.message}</small>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function setupAutoScrollControl() {
+  // This function sets up auto-scroll for carousels
+  // You can add any carousel control setup here
+  console.log('Auto scroll controls setup');
+}
+
+function scrollToSlide(carouselType, slideIndex) {
+  const carousel = document.getElementById(`${carouselType}Carousel`);
+  const slideWidth = carousel.children[0].offsetWidth + 20; // width + gap
+  carousel.scrollTo({
+    left: slideIndex * slideWidth,
+    behavior: 'smooth'
+  });
+  updateDots(carouselType, slideIndex);
+}
+
+function updateDots(carouselType, activeIndex) {
+  const dots = document.querySelectorAll(`#${carouselType}Dots .dot`);
+  dots.forEach((dot, index) => {
+    dot.classList.toggle('active', index === activeIndex);
+  });
+}
+
+// ===== AUTO-SCROLL FUNCTIONALITY =====
+let autoScrollIntervals = {};
+
+function startAutoScroll() {
+  // Clear any existing intervals
+  Object.values(autoScrollIntervals).forEach(clearInterval);
+  
+  // Start auto-scroll for pictures
+  autoScrollIntervals.pictures = setInterval(() => {
+    const carousel = document.getElementById('picturesCarousel');
+    const nextScroll = carousel.scrollLeft + carousel.children[0].offsetWidth + 20;
+    
+    if (nextScroll >= carousel.scrollWidth) {
+      carousel.scrollTo({ left: 0, behavior: 'smooth' });
+    } else {
+      carousel.scrollBy({ left: carousel.children[0].offsetWidth + 20, behavior: 'smooth' });
+    }
+  }, 4000);
+  
+  // Start auto-scroll for videos
+  autoScrollIntervals.videos = setInterval(() => {
+    const carousel = document.getElementById('videosCarousel');
+    const nextScroll = carousel.scrollLeft + carousel.children[0].offsetWidth + 20;
+    
+    if (nextScroll >= carousel.scrollWidth) {
+      carousel.scrollTo({ left: 0, behavior: 'smooth' });
+    } else {
+      carousel.scrollBy({ left: carousel.children[0].offsetWidth + 20, behavior: 'smooth' });
+    }
+  }, 4500);
+}
+
+function setupAutoScrollControl() {
+ // Update dots on scroll - FIXED VERSION
+  const carousels = ['picturesCarousel', 'videosCarousel'];
+  carousels.forEach(carouselId => {
+    const carousel = document.getElementById(carouselId);
+    const type = carouselId.replace('Carousel', '');
+    
+    carousel.addEventListener('scroll', () => {
+      // Get the width of one item + the 20px gap
+      const firstItem = carousel.querySelector('.carousel-item');
+      if (firstItem) {
+        const slideWidth = firstItem.offsetWidth + 20; 
+        
+        // Use Math.round to find the nearest slide index
+        const slideIndex = Math.round(carousel.scrollLeft / slideWidth);
+        
+        // Trigger the dot update
+        updateDots(type, slideIndex);
+      }
+    });
+  });
+}
+
+// ===== DRAG FUNCTIONALITY =====
+function setupDragScrolling() {
+  const carousels = ['picturesCarousel', 'videosCarousel'];
+  
+  carousels.forEach(carouselId => {
+    const carousel = document.getElementById(carouselId);
+    let isDragging = false;
+    let startX;
+    let scrollLeft;
+    
+    carousel.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      carousel.classList.add('grabbing');
+      startX = e.pageX - carousel.offsetLeft;
+      scrollLeft = carousel.scrollLeft;
+    });
+    
+    carousel.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      const x = e.pageX - carousel.offsetLeft;
+      const walk = (x - startX) * 2;
+      carousel.scrollLeft = scrollLeft - walk;
+    });
+    
+    carousel.addEventListener('mouseup', () => {
+      isDragging = false;
+      carousel.classList.remove('grabbing');
+    });
+    
+    carousel.addEventListener('mouseleave', () => {
+      isDragging = false;
+      carousel.classList.remove('grabbing');
+    });
+    
+    // Touch events for mobile
+    carousel.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      carousel.classList.add('grabbing');
+      startX = e.touches[0].pageX - carousel.offsetLeft;
+      scrollLeft = carousel.scrollLeft;
+    });
+    
+    carousel.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      const x = e.touches[0].pageX - carousel.offsetLeft;
+      const walk = (x - startX) * 2;
+      carousel.scrollLeft = scrollLeft - walk;
+    });
+    
+    carousel.addEventListener('touchend', () => {
+      isDragging = false;
+      carousel.classList.remove('grabbing');
+    });
+  });
+}
+
+// ===== MODAL FUNCTIONALITY =====
+const eventsModal = document.getElementById('eventsModal');
+const eventsModalBtn = document.getElementById('eventsModalBtn');
+const closeModalBtn = document.getElementById('closeModal');
+
+function openModal() {
+  eventsModal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  eventsModal.classList.remove('active');
+  document.body.style.overflow = 'auto';
+}
+
+function filterByCategory(category) {
+  const eventItems = document.querySelectorAll('.event-item');
+  eventItems.forEach(item => {
+    if (item.dataset.category === category.toLowerCase()) {
+      item.style.background = 'rgba(0, 45, 114, 0.1)';
+      item.style.borderColor = 'var(--accent)';
+    } else {
+      item.style.background = '';
+      item.style.borderColor = '#eee';
+    }
+  });
+  
+  alert(`Filtering gallery for: ${category} events`);
+}
+
+function setupNavigation() {
+  // Previous/Next buttons
+  document.querySelectorAll('.prev-btn, .next-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const carouselType = this.dataset.carousel;
+      const carousel = document.getElementById(`${carouselType}Carousel`);
+      const slideWidth = carousel.children[0].offsetWidth + 20;
+      const direction = this.classList.contains('prev-btn') ? -1 : 1;
+      
+      carousel.scrollBy({
+        left: slideWidth * direction,
+        behavior: 'smooth'
+      });
+    });
+  });
+  
+  // Modal buttons
+  eventsModalBtn.addEventListener('click', openModal);
+  closeModalBtn.addEventListener('click', closeModal);
+  
+  // Close modal on overlay click
+  eventsModal.addEventListener('click', (e) => {
+    if (e.target === eventsModal) {
+      closeModal();
+    }
+  });
+  
+  // Close modal on escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && eventsModal.classList.contains('active')) {
+      closeModal();
+    }
+  });
+
+  // Lightbox close button
+closeLightboxBtn.addEventListener('click', closeLightbox);
+
+// Close lightbox on overlay click
+mediaLightbox.addEventListener('click', (e) => {
+  if (e.target === mediaLightbox) {
+    closeLightbox();
+  }
+});
+
+// Close lightbox on escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && mediaLightbox.classList.contains('active')) {
+    closeLightbox();
+  }
+});
+}
+
+// ===== LIGHTBOX AND VIDEO PLAYER FUNCTIONS =====
+
+
+
+
+
+function formatTime(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+}
+
+// ===== INITIALIZE EVERYTHING =====
+// ===== INITIALIZE EVERYTHING =====
+window.addEventListener('DOMContentLoaded', () => {
+  // Load gallery from Firebase first, then setup everything
+  loadGalleryFromFirebase().then(() => {
+    setupNavigation();
+    setupDragScrolling();
+    startAutoScroll();
+    setupAutoScrollControl();
+    setupMediaControls();
+    
+    // Initialize with first link active
+    navLinks[0].classList.add('active');
+    
+    // Update dots on scroll (only if we have items)
+    const carousels = ['picturesCarousel', 'videosCarousel'];
+    carousels.forEach(carouselId => {
+      const carousel = document.getElementById(carouselId);
+      if (carousel && carousel.children.length > 0) {
+        const type = carouselId.replace('Carousel', '');
+        
+        carousel.addEventListener('scroll', () => {
+          const slideWidth = carousel.children[0].offsetWidth + 20;
+          const slideIndex = Math.round(carousel.scrollLeft / slideWidth);
+          updateDots(type, slideIndex);
+        });
+      }
+    });
+  });
+});
+
+formMessage.innerHTML = `
+  <i class="fas fa-check-circle"></i>
+  <h3>Thank You!</h3>
+  <p>You've been added to our volunteer database. We'll share campaign updates and opportunities via email.</p>
+`;
+</script>
+</body>
+</html>
