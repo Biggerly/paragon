@@ -21,6 +21,12 @@
       --gold: #c5a028;
       --gray: #f2f2f2;
       --container-padding: max(20px, 5vw);
+
+      --bg-dark: #0a0a0a;
+  --text-dark: #ffffff;
+  --accent-dark: #3a7bd5;
+  --gold-dark: #e6c158;
+  --gray-dark: #1a1a1a;
     }
 
     * { 
@@ -2418,6 +2424,180 @@
   background: #555;
 }
 
+/* ===== DARK MODE STYLES ===== */
+body.dark-mode {
+  --bg: var(--bg-dark);
+  --text: var(--text-dark);
+  --accent: var(--accent-dark);
+  --gold: var(--gold-dark);
+  --gray: var(--gray-dark);
+}
+
+body.dark-mode {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+body.dark-mode nav {
+  background: rgba(26, 26, 26, 0.95);
+  backdrop-filter: saturate(180%) blur(20px);
+}
+
+body.dark-mode .mobile-menu {
+  background: rgba(26, 26, 26, 0.98);
+}
+
+body.dark-mode .logo,
+body.dark-mode .nav-link {
+  color: var(--text);
+}
+
+body.dark-mode .social-split {
+  border-top: 1px solid #333;
+}
+
+body.dark-mode .news-box {
+  border-color: #333;
+}
+
+body.dark-mode .social-btn {
+  border: 1px solid #333;
+  color: var(--text);
+}
+
+body.dark-mode .social-btn:hover {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+body.dark-mode footer {
+  border-top: 1px solid #333;
+}
+
+body.dark-mode .donation-section,
+body.dark-mode .volunteer-section,
+body.dark-mode .donation-modal-content,
+body.dark-mode .payment-success-content {
+  background: #1a1a1a;
+  color: var(--text);
+}
+
+body.dark-mode .donation-tier {
+  background: #2a2a2a;
+  border: 2px solid #333;
+}
+
+body.dark-mode .custom-donation {
+  border: 2px dashed #444;
+}
+
+body.dark-mode .form-group input,
+body.dark-mode .form-group textarea,
+body.dark-mode .form-group select {
+  background: #2a2a2a;
+  border: 2px solid #333;
+  color: var(--text);
+}
+
+body.dark-mode .checkbox-label:hover {
+  background: #2a2a2a;
+}
+
+body.dark-mode .payment-details {
+  background: #2a2a2a;
+}
+
+body.dark-mode .carousel-caption {
+  background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+}
+
+body.dark-mode .events-modal,
+body.dark-mode .media-lightbox {
+  background: rgba(0, 0, 0, 0.95);
+}
+
+body.dark-mode .events-modal .events-modal,
+body.dark-mode .events-modal .event-item {
+  background: #1a1a1a;
+  color: var(--text);
+  border: 1px solid #333;
+}
+
+body.dark-mode .event-item:hover {
+  background: #2a2a2a;
+}
+
+body.dark-mode .lightbox-content-wrapper {
+  background: #000;
+}
+
+/* Dark mode toggle button styles */
+.dark-mode-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text);
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+}
+
+body.dark-mode .dark-mode-toggle {
+  color: var(--text);
+}
+
+.dark-mode-toggle:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode .dark-mode-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-menu .dark-mode-toggle {
+  margin-top: 1rem;
+  padding: 0.8rem 1.5rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+body.dark-mode .mobile-menu .dark-mode-toggle {
+  background: var(--accent);
+}
+
+.mobile-menu .dark-mode-toggle:hover {
+  opacity: 0.9;
+}
+
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+body, 
+nav,
+.donation-section,
+.volunteer-section,
+.donation-modal-content,
+.payment-success-content,
+.donation-tier,
+.events-modal,
+.lightbox-content-wrapper {
+  transition: background-color 0.3s ease;
+}
+
 
 .gallery-section  {zoom:0.8;}
 
@@ -2441,6 +2621,11 @@
   <a href="#getinvolved" class="nav-link donate-nav">Donate</a>
   <a href="#contact" class="nav-cta">Join Movement</a>
 </div>
+
+    <button class="dark-mode-toggle" id="darkModeToggle" aria-label="Toggle dark mode">
+      <i class="fas fa-moon"></i>
+    </button>
+
       
       <div class="btn-circle" id="menuToggle" aria-label="Toggle menu">
         <div class="l"></div>
@@ -2458,7 +2643,14 @@
   <a href="#getinvolved" class="nav-link donate-nav" onclick="closeMobileMenu()">Donate</a>
       <a href="#news" class="nav-link" onclick="closeMobileMenu()">News</a>
       <a href="#contact" class="nav-cta" onclick="closeMobileMenu()">Join Movement</a>
+
+        <button class="dark-mode-toggle" id="darkModeToggleMobile" onclick="closeMobileMenu()" aria-label="Toggle dark mode">
+    <i class="fas fa-moon"></i> Dark Mode
+  </button>
+
     </div>
+
+    
 
   <section class="hero" id="home">
   <!-- Desktop Hero -->
@@ -2478,7 +2670,7 @@
     <div class="hero-img-desktop reveal">
       <div class="hero-img-desktop-inner">
         <!-- <div class="image-badge">Leadership</div> -->
-        <img src="1768761696697.jpg" alt="Hon. Paragon - Visionary Leader" loading="lazy">
+        <img src="paragon2.jpg" alt="Hon. Paragon - Visionary Leader" loading="lazy">
       </div>
     </div>
   </div>
@@ -2488,7 +2680,7 @@
     <div class="mobile-hero-container">
       <div class="mobile-hero-image reveal">
         <!-- <div class="image-badge">Leadership</div> -->
-        <img src="1768761696697.jpg" alt="Hon. Paragon - Visionary Leader" loading="eager">
+        <img src="paragon2.jpg" alt="Hon. Paragon - Visionary Leader" loading="eager">
       </div>
       
       <div class="mobile-hero-text">
@@ -4317,8 +4509,82 @@ formMessage.innerHTML = `
   <h3>Thank You!</h3>
   <p>You've been added to our volunteer database. We'll share campaign updates and opportunities via email.</p>
 `;
+
+
+// ===== DARK MODE FUNCTIONALITY =====
+const darkModeToggle = document.getElementById('darkModeToggle');
+const darkModeToggleMobile = document.getElementById('darkModeToggleMobile');
+
+// Check for saved theme or prefer-color-scheme
+function initDarkMode() {
+  const savedTheme = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
+  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+    enableDarkMode();
+  } else {
+    disableDarkMode();
+  }
+}
+
+function enableDarkMode() {
+  document.body.classList.add('dark-mode');
+  updateDarkModeIcons();
+  localStorage.setItem('theme', 'dark');
+}
+
+function disableDarkMode() {
+  document.body.classList.remove('dark-mode');
+  updateDarkModeIcons();
+  localStorage.setItem('theme', 'light');
+}
+
+function toggleDarkMode() {
+  if (document.body.classList.contains('dark-mode')) {
+    disableDarkMode();
+  } else {
+    enableDarkMode();
+  }
+}
+
+function updateDarkModeIcons() {
+  const isDark = document.body.classList.contains('dark-mode');
+  const iconClass = isDark ? 'fa-sun' : 'fa-moon';
+  const oppositeClass = isDark ? 'fa-moon' : 'fa-sun';
+  
+  // Update desktop toggle
+  if (darkModeToggle) {
+    darkModeToggle.innerHTML = `<i class="fas ${iconClass}"></i>`;
+  }
+  
+  // Update mobile toggle
+  if (darkModeToggleMobile) {
+    darkModeToggleMobile.innerHTML = `<i class="fas ${iconClass}"></i> ${isDark ? 'Light Mode' : 'Dark Mode'}`;
+  }
+}
+
+// Event listeners
+if (darkModeToggle) {
+  darkModeToggle.addEventListener('click', toggleDarkMode);
+}
+
+if (darkModeToggleMobile) {
+  darkModeToggleMobile.addEventListener('click', toggleDarkMode);
+}
+
+// Listen for system theme changes
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+  if (!localStorage.getItem('theme')) {
+    if (e.matches) {
+      enableDarkMode();
+    } else {
+      disableDarkMode();
+    }
+  }
+});
+
+// Initialize dark mode
+initDarkMode();
 </script>
 </body>
-
 </html>
-
