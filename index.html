@@ -2597,7 +2597,108 @@ nav,
 .lightbox-content-wrapper {
   transition: background-color 0.3s ease;
 }
+/* Hero Slideshow Styles */
+.hero-img-desktop-inner {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+}
 
+.hero-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  object-fit: cover;
+}
+
+.hero-slide.active {
+  opacity: 1;
+}
+
+.hero-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%) contrast(110%);
+}
+
+.hero-img-desktop:hover .hero-slide img {
+  filter: grayscale(0%) contrast(100%);
+  transform: scale(1.05);
+  transition: filter 1s ease, transform 1s ease;
+}
+
+/* Mobile Slideshow */
+.mobile-hero-image {
+  width: 100%;
+  max-width: 400px;
+  height: 300px;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-hero-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.mobile-hero-slide.active {
+  opacity: 1;
+}
+
+.mobile-hero-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1023px) {
+  .hero-img-desktop {
+    display: none;
+  }
+  
+  .hero-mobile {
+    display: block;
+  }
+  
+  .mobile-hero-image {
+    height: 350px;
+    max-width: 500px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-desktop {
+    display: flex;
+  }
+  
+  .hero-mobile {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .mobile-hero-image {
+    height: 250px;
+    border-radius: 16px;
+  }
+}
 
 .gallery-section  {zoom:0.8;}
 
@@ -2652,7 +2753,7 @@ nav,
 
     
 
-  <section class="hero" id="home">
+ <section class="hero" id="home">
   <!-- Desktop Hero -->
   <div class="hero-desktop">
     <div class="hero-content">
@@ -2667,20 +2768,20 @@ nav,
       </a>
     </div>
     
+    <!-- Hero Slideshow Container -->
     <div class="hero-img-desktop reveal">
-      <div class="hero-img-desktop-inner">
-        <!-- <div class="image-badge">Leadership</div> -->
-        <img src="paragon2.jpg" alt="Hon. Paragon - Visionary Leader" loading="lazy">
+      <div class="hero-img-desktop-inner" id="heroSlideshow">
+        <!-- Slides will be added by JavaScript -->
       </div>
     </div>
   </div>
   
-  <!-- Mobile Hero - COMPLETELY SEPARATE LAYOUT -->
+  <!-- Mobile Hero -->
   <div class="hero-mobile">
     <div class="mobile-hero-container">
-      <div class="mobile-hero-image reveal">
-        <!-- <div class="image-badge">Leadership</div> -->
-        <img src="paragon2.jpg" alt="Hon. Paragon - Visionary Leader" loading="eager">
+      <!-- Mobile Hero Slideshow -->
+      <div class="mobile-hero-image reveal" id="mobileHeroSlideshow">
+        <!-- Slides will be added by JavaScript -->
       </div>
       
       <div class="mobile-hero-text">
@@ -4575,7 +4676,132 @@ if (darkModeToggleMobile) {
 
 // Initialize dark mode - will default to light mode
 initDarkMode();
+
+
+
+
+
+
+
+
+
+
+  // ===== SIMPLE HERO SLIDESHOW =====
+
+// Array of hero images (add your image URLs here)
+const heroImages = [
+  "paragon2.jpg",  // Your current image
+  "https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1551135049-8a33b2fb2d7f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+];
+
+// Configuration
+const SLIDE_INTERVAL = 5000; // 5 seconds between slides
+let currentSlide = 0;
+
+// Initialize the slideshow
+function initHeroSlideshow() {
+  const desktopContainer = document.getElementById('heroSlideshow');
+  const mobileContainer = document.getElementById('mobileHeroSlideshow');
+  
+  if (!desktopContainer || !mobileContainer) return;
+  
+  // Clear any existing content
+  desktopContainer.innerHTML = '';
+  mobileContainer.innerHTML = '';
+  
+  // Create slides for desktop
+  heroImages.forEach((src, index) => {
+    // Desktop slide
+    const desktopSlide = document.createElement('div');
+    desktopSlide.className = `hero-slide ${index === 0 ? 'active' : ''}`;
+    desktopSlide.innerHTML = `
+      <img src="${src}" alt="Hon. Paragon - Slide ${index + 1}" loading="${index === 0 ? 'eager' : 'lazy'}">
+    `;
+    desktopContainer.appendChild(desktopSlide);
+    
+    // Mobile slide
+    const mobileSlide = document.createElement('div');
+    mobileSlide.className = `mobile-hero-slide ${index === 0 ? 'active' : ''}`;
+    mobileSlide.innerHTML = `
+      <img src="${src}" alt="Hon. Paragon - Slide ${index + 1}" loading="${index === 0 ? 'eager' : 'lazy'}">
+    `;
+    mobileContainer.appendChild(mobileSlide);
+  });
+  
+  // Start the automatic slideshow
+  startSlideshow();
+}
+
+// Function to change slides
+function changeSlide() {
+  const desktopSlides = document.querySelectorAll('.hero-slide');
+  const mobileSlides = document.querySelectorAll('.mobile-hero-slide');
+  
+  if (desktopSlides.length === 0 || mobileSlides.length === 0) return;
+  
+  // Remove active class from current slide
+  desktopSlides[currentSlide].classList.remove('active');
+  mobileSlides[currentSlide].classList.remove('active');
+  
+  // Move to next slide
+  currentSlide = (currentSlide + 1) % heroImages.length;
+  
+  // Add active class to new slide
+  desktopSlides[currentSlide].classList.add('active');
+  mobileSlides[currentSlide].classList.add('active');
+}
+
+// Start the automatic slideshow
+function startSlideshow() {
+  // Change slide every X seconds
+  setInterval(changeSlide, SLIDE_INTERVAL);
+}
+
+// Pause slideshow on hover (optional)
+function setupSlideshowControls() {
+  const desktopContainer = document.querySelector('.hero-img-desktop-inner');
+  const mobileContainer = document.querySelector('.mobile-hero-image');
+  
+  if (desktopContainer) {
+    let desktopTimer;
+    
+    desktopContainer.addEventListener('mouseenter', () => {
+      clearInterval(desktopTimer);
+    });
+    
+    desktopContainer.addEventListener('mouseleave', () => {
+      desktopTimer = setInterval(changeSlide, SLIDE_INTERVAL);
+    });
+  }
+  
+  if (mobileContainer) {
+    let mobileTimer;
+    
+    mobileContainer.addEventListener('touchstart', () => {
+      clearInterval(mobileTimer);
+    });
+    
+    mobileContainer.addEventListener('touchend', () => {
+      mobileTimer = setInterval(changeSlide, SLIDE_INTERVAL);
+    });
+  }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  // Add a small delay to ensure everything is loaded
+  setTimeout(() => {
+    initHeroSlideshow();
+    setupSlideshowControls();
+  }, 100);
+});
+
+// Also initialize when page fully loads
+window.addEventListener('load', initHeroSlideshow);
 </script>
 </body>
 </html>
+
 
