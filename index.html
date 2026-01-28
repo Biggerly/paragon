@@ -4515,14 +4515,15 @@ formMessage.innerHTML = `
 const darkModeToggle = document.getElementById('darkModeToggle');
 const darkModeToggleMobile = document.getElementById('darkModeToggleMobile');
 
-// Check for saved theme or prefer-color-scheme
+// Initialize with light mode as default
 function initDarkMode() {
   const savedTheme = localStorage.getItem('theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   
-  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+  // Default to light mode unless user explicitly chose dark
+  if (savedTheme === 'dark') {
     enableDarkMode();
   } else {
+    // Force light mode as default
     disableDarkMode();
   }
 }
@@ -4572,19 +4573,9 @@ if (darkModeToggleMobile) {
   darkModeToggleMobile.addEventListener('click', toggleDarkMode);
 }
 
-// Listen for system theme changes
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-  if (!localStorage.getItem('theme')) {
-    if (e.matches) {
-      enableDarkMode();
-    } else {
-      disableDarkMode();
-    }
-  }
-});
-
-// Initialize dark mode
+// Initialize dark mode - will default to light mode
 initDarkMode();
 </script>
 </body>
 </html>
+
