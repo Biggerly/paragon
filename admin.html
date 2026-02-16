@@ -8,9 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  
+ 
   <style>
     :root {
       --bg: #ffffff;
@@ -967,10 +965,10 @@
 
           <!-- Single file settings (shown when single file selected) -->
           <div id="singleFileSettings">
-            <div class="form-group">
-              <label for="mediaTitle">Title *</label>
-              <input type="text" id="mediaTitle" name="mediaTitle" required placeholder="Enter media title">
-            </div>
+  <div class="form-group">
+    <label for="mediaTitle">Title *</label>
+    <input type="text" id="mediaTitle" name="mediaTitle" required placeholder="Enter media title">
+  </div>
 
             <div class="form-row">
               <div class="form-group">
@@ -1103,1093 +1101,1202 @@
     </div>
   </div>
 
-  <script>
-    // Firebase Configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyA9pipSseb3QaDJynMPkGLG68oKfxU4ulQ",
-      authDomain: "paragon00.firebaseapp.com",
-      projectId: "paragon00",
-      storageBucket: "paragon00.firebasestorage.app",
-      messagingSenderId: "820669281169",
-      appId: "1:820669281169:web:a1b2edfa3f3970d9902030",
-      measurementId: "G-PW92KZK57Q"
-    };
+  <!-- Add Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    // Initialize Firebase with Storage
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const storage = firebase.storage();
+<script>
+  // ===== SUPABASE CONFIGURATION =====
+  const SUPABASE_URL = 'https://vyhuhslcxdbmrtotbzfd.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ5aHVoc2xjeGRibXJ0b3RiemZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMDUzMjksImV4cCI6MjA4Njc4MTMyOX0.witykNO4XztZHfYpRQpCpoDlx5IZP2riEnRyqeJs2C0';
+  const supabaseAdmin = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // DOM Elements
-    const messageContainer = document.getElementById('messageContainer');
-    const totalEvents = document.getElementById('totalEvents');
-    const totalMedia = document.getElementById('totalMedia');
-    
-    // File upload elements
-    const fileDropZone = document.getElementById('fileDropZone');
-    const fileInput = document.getElementById('fileInput');
-    const browseBtn = document.getElementById('browseBtn');
-    const selectedFiles = document.getElementById('selectedFiles');
-    const uploadProgress = document.getElementById('uploadProgress');
-    const progressBar = document.getElementById('progressBar');
-    const progressText = document.getElementById('progressText');
-    const fileList = document.getElementById('fileList');
-    const multipleFilesInfo = document.getElementById('multipleFilesInfo');
-    const bulkSettings = document.getElementById('bulkSettings');
-    const singleFileSettings = document.getElementById('singleFileSettings');
-    const bulkEventSelect = document.getElementById('bulkEvent');
-    const bulkDateInput = document.getElementById('bulkDate');
-    
-    // Sidebar navigation
-    const sidebarBtns = document.querySelectorAll('.sidebar-btn');
-    const adminSections = document.querySelectorAll('.admin-section');
-    
-    // Events section
-    const addEventBtn = document.getElementById('addEventBtn');
-    const eventsTable = document.getElementById('eventsTable');
-    const eventsTableBody = document.getElementById('eventsTableBody');
-    const eventsLoading = document.getElementById('eventsLoading');
-    
-    // Media section
-    const mediaTable = document.getElementById('mediaTable');
-    const mediaTableBody = document.getElementById('mediaTableBody');
-    const mediaLoading = document.getElementById('mediaLoading');
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    
-    // Upload Media section
-    const mediaForm = document.getElementById('mediaForm');
-    const mediaEventSelect = document.getElementById('mediaEvent');
-    const mediaDateInput = document.getElementById('mediaDate');
-    const mediaCancelBtn = document.getElementById('mediaCancelBtn');
-    
-    // Modals
-    const eventModal = document.getElementById('eventModal');
-    const eventForm = document.getElementById('eventForm');
-    const eventNameInput = document.getElementById('eventName');
-    const eventDateInput = document.getElementById('eventDate');
-    const closeEventModal = document.getElementById('closeEventModal');
-    const cancelEventBtn = document.getElementById('cancelEventBtn');
-    
-    const deleteModal = document.getElementById('deleteModal');
-    const deleteMessage = document.getElementById('deleteMessage');
-    const storageDeleteMessage = document.getElementById('storageDeleteMessage');
-    const closeDeleteModal = document.getElementById('closeDeleteModal');
-    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
-    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-    
-    const previewModal = document.getElementById('previewModal');
-    const previewImage = document.getElementById('previewImage');
-    const previewVideo = document.getElementById('previewVideo');
-    const closePreviewModal = document.getElementById('closePreviewModal');
-    
-    // State
-    let events = [];
-    let media = [];
-    let currentFilter = 'all';
-    let editingEventId = null;
-    let deletingItem = null;
-    let deletingType = null;
-    let selectedFilesArray = [];
-    let uploadTask = null;
-    let isUploading = false;
+  // DOM Elements
+  const messageContainer = document.getElementById('messageContainer');
+  const totalEvents = document.getElementById('totalEvents');
+  const totalMedia = document.getElementById('totalMedia');
+  
+  // File upload elements
+  const fileDropZone = document.getElementById('fileDropZone');
+  const fileInput = document.getElementById('fileInput');
+  const browseBtn = document.getElementById('browseBtn');
+  const selectedFiles = document.getElementById('selectedFiles');
+  const uploadProgress = document.getElementById('uploadProgress');
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const fileList = document.getElementById('fileList');
+  const multipleFilesInfo = document.getElementById('multipleFilesInfo');
+  const bulkSettings = document.getElementById('bulkSettings');
+  const singleFileSettings = document.getElementById('singleFileSettings');
+  const bulkEventSelect = document.getElementById('bulkEvent');
+  const bulkDateInput = document.getElementById('bulkDate');
+  
+  // Sidebar navigation
+  const sidebarBtns = document.querySelectorAll('.sidebar-btn');
+  const adminSections = document.querySelectorAll('.admin-section');
+  
+  // Events section
+  const addEventBtn = document.getElementById('addEventBtn');
+  const eventsTable = document.getElementById('eventsTable');
+  const eventsTableBody = document.getElementById('eventsTableBody');
+  const eventsLoading = document.getElementById('eventsLoading');
+  
+  // Media section
+  const mediaTable = document.getElementById('mediaTable');
+  const mediaTableBody = document.getElementById('mediaTableBody');
+  const mediaLoading = document.getElementById('mediaLoading');
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  
+  // Upload Media section
+  const mediaForm = document.getElementById('mediaForm');
+  const mediaEventSelect = document.getElementById('mediaEvent');
+  const mediaDateInput = document.getElementById('mediaDate');
+  const mediaCancelBtn = document.getElementById('mediaCancelBtn');
+  
+  // Modals
+  const eventModal = document.getElementById('eventModal');
+  const eventForm = document.getElementById('eventForm');
+  const eventNameInput = document.getElementById('eventName');
+  const eventDateInput = document.getElementById('eventDate');
+  const eventLocationInput = document.getElementById('eventLocation');
+  const eventDescriptionInput = document.getElementById('eventDescription');
+  const eventColorInput = document.getElementById('eventColor');
+  const closeEventModal = document.getElementById('closeEventModal');
+  const cancelEventBtn = document.getElementById('cancelEventBtn');
+  
+  const deleteModal = document.getElementById('deleteModal');
+  const deleteMessage = document.getElementById('deleteMessage');
+  const storageDeleteMessage = document.getElementById('storageDeleteMessage');
+  const closeDeleteModal = document.getElementById('closeDeleteModal');
+  const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+  const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+  
+  const previewModal = document.getElementById('previewModal');
+  const previewImage = document.getElementById('previewImage');
+  const previewVideo = document.getElementById('previewVideo');
+  const previewTitle = document.getElementById('previewTitle');
+  const closePreviewModal = document.getElementById('closePreviewModal');
+  
+  // State
+  let events = [];
+  let media = [];
+  let currentFilter = 'all';
+  let editingEventId = null;
+  let deletingItem = null;
+  let deletingType = null;
+  let selectedFilesArray = [];
+  let uploadTask = null;
+  let isUploading = false;
 
-    // Show message
-    function showMessage(type, text, error = null) {
-      const message = document.createElement('div');
-      message.className = `message ${type}`;
-      
-      let errorDetails = '';
-      if (error) {
-        console.error('Error details:', error);
-        errorDetails = `<br><small style="opacity:0.7;">${error.message || error}</small>`;
-      }
-      
-      message.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
-          <div>
-            <span>${text}</span>
-            ${errorDetails}
-          </div>
+  // Show message
+  function showMessage(type, text, error = null) {
+    const message = document.createElement('div');
+    message.className = `message ${type}`;
+    
+    let errorDetails = '';
+    if (error) {
+      console.error('Error details:', error);
+      errorDetails = `<br><small style="opacity:0.7;">${error.message || error}</small>`;
+    }
+    
+    message.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+        <div>
+          <span>${text}</span>
+          ${errorDetails}
         </div>
+      </div>
+    `;
+    
+    messageContainer.innerHTML = '';
+    messageContainer.appendChild(message);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      if (message.parentNode) {
+        message.style.opacity = '0';
+        message.style.transition = 'opacity 0.3s';
+        setTimeout(() => {
+          if (message.parentNode) {
+            message.remove();
+          }
+        }, 300);
+      }
+    }, 5000);
+  }
+
+  // Format file size
+  function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  // Format date
+  function formatDate(date) {
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+
+  // Generate event ID from name
+  function generateEventId(name) {
+    return name.toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
+  }
+
+  // Validate file
+  function validateFile(file) {
+    const maxSize = 50 * 1024 * 1024; // 50MB
+    const allowedTypes = [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+      'video/mp4',
+      'video/mov',
+      'video/avi',
+      'video/webm'
+    ];
+    
+    const errors = [];
+    
+    if (file.size > maxSize) {
+      errors.push(`File "${file.name}" is too large (max 50MB)`);
+    }
+    
+    if (!allowedTypes.includes(file.type)) {
+      errors.push(`File "${file.name}" type not supported`);
+    }
+    
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  }
+
+  // Add file to selection
+  function addFileToSelection(file) {
+    const validation = validateFile(file);
+    if (!validation.isValid) {
+      showMessage('error', validation.errors.join(', '));
+      return false;
+    }
+    
+    // Create file object
+    const fileObj = {
+      file: file,
+      id: 'file_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+      name: file.name,
+      size: file.size,
+      type: file.type.startsWith('image/') ? 'image' : 'video',
+      previewUrl: URL.createObjectURL(file)
+    };
+    
+    selectedFilesArray.push(fileObj);
+    updateFileSelectionUI();
+    return true;
+  }
+
+  // Update file selection UI
+  // Update file selection UI
+function updateFileSelectionUI() {
+  // Clear previews
+  selectedFiles.innerHTML = '';
+  fileList.innerHTML = '';
+  
+  if (selectedFilesArray.length === 0) {
+    selectedFiles.style.display = 'none';
+    multipleFilesInfo.style.display = 'none';
+    bulkSettings.style.display = 'none';
+    singleFileSettings.style.display = 'block';
+    
+    // 🔥 FIX: Enable required for single file fields
+    document.getElementById('mediaEvent').required = true;
+    document.getElementById('mediaDate').required = true;
+    document.getElementById('mediaTitle').required = true;
+    
+    // 🔥 FIX: Disable required for bulk fields
+    document.getElementById('bulkEvent').required = false;
+    document.getElementById('bulkDate').required = false;
+    return;
+  }
+  
+  // Show selected files
+  selectedFiles.style.display = 'flex';
+  
+  // Create previews
+  selectedFilesArray.forEach((fileObj, index) => {
+    // Preview container
+    const preview = document.createElement('div');
+    preview.className = 'media-preview';
+    
+    if (fileObj.type === 'image') {
+      preview.innerHTML = `
+        <img src="${fileObj.previewUrl}" alt="${fileObj.name}">
+        <button class="remove-media" data-index="${index}">
+          <i class="fas fa-times"></i>
+        </button>
       `;
-      
-      messageContainer.innerHTML = '';
-      messageContainer.appendChild(message);
-      
-      // Auto-remove after 5 seconds
-      setTimeout(() => {
-        if (message.parentNode) {
-          message.style.opacity = '0';
-          message.style.transition = 'opacity 0.3s';
-          setTimeout(() => {
-            if (message.parentNode) {
-              message.remove();
-            }
-          }, 300);
-        }
-      }, 5000);
+    } else {
+      preview.innerHTML = `
+        <video>
+          <source src="${fileObj.previewUrl}" type="${fileObj.file.type}">
+        </video>
+        <div style="position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.7); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">
+          <i class="fas fa-video"></i>
+        </div>
+        <button class="remove-media" data-index="${index}">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
     }
-
-    // Format file size
-    function formatFileSize(bytes) {
-      if (bytes === 0) return '0 Bytes';
-      const k = 1024;
-      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-      const i = Math.floor(Math.log(bytes) / Math.log(k));
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    
+    selectedFiles.appendChild(preview);
+    
+    // File list item
+    const listItem = document.createElement('div');
+    listItem.className = 'file-info';
+    listItem.innerHTML = `
+      <div class="file-name">${fileObj.name}</div>
+      <div class="file-size">${formatFileSize(fileObj.size)} • ${fileObj.type}</div>
+    `;
+    fileList.appendChild(listItem);
+  });
+  
+  // Show/hide appropriate sections
+  if (selectedFilesArray.length > 1) {
+    multipleFilesInfo.style.display = 'block';
+    bulkSettings.style.display = 'block';
+    singleFileSettings.style.display = 'none';
+    
+    // 🔥 FIX: Enable required for bulk fields
+    document.getElementById('bulkEvent').required = true;
+    document.getElementById('bulkDate').required = true;
+    
+    // 🔥 FIX: Disable required for single file fields
+    document.getElementById('mediaEvent').required = false;
+    document.getElementById('mediaDate').required = false;
+    document.getElementById('mediaTitle').required = false;
+    
+  } else {
+    multipleFilesInfo.style.display = 'none';
+    bulkSettings.style.display = 'none';
+    singleFileSettings.style.display = 'block';
+    
+    // 🔥 FIX: Enable required for single file fields
+    document.getElementById('mediaEvent').required = true;
+    document.getElementById('mediaDate').required = true;
+    document.getElementById('mediaTitle').required = true;
+    
+    // 🔥 FIX: Disable required for bulk fields
+    document.getElementById('bulkEvent').required = false;
+    document.getElementById('bulkDate').required = false;
+    
+    // Auto-fill single file form
+    if (selectedFilesArray.length === 1) {
+      const fileObj = selectedFilesArray[0];
+      document.getElementById('mediaTitle').value = 
+        fileObj.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, ' ');
     }
+  }
+  
+  // Add event listeners to remove buttons
+  document.querySelectorAll('.remove-media').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const index = parseInt(e.target.closest('button').dataset.index);
+      removeFile(index);
+    });
+  });
+}
 
-    // Format date
-    function formatDate(date) {
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
-    }
+  // Remove file from selection
+  function removeFile(index) {
+    // Revoke object URL to prevent memory leaks
+    URL.revokeObjectURL(selectedFilesArray[index].previewUrl);
+    selectedFilesArray.splice(index, 1);
+    updateFileSelectionUI();
+  }
 
-    // Generate event ID from name
-    function generateEventId(name) {
-      return name.toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .trim();
-    }
+  // Clear all files
+  // Clear all files
+function clearFileSelection() {
+  // Revoke all object URLs
+  selectedFilesArray.forEach(fileObj => {
+    URL.revokeObjectURL(fileObj.previewUrl);
+  });
+  
+  selectedFilesArray = [];
+  updateFileSelectionUI();
+  uploadProgress.style.display = 'none';
+  mediaForm.reset();
+  mediaDateInput.value = new Date().toISOString().split('T')[0];
+  bulkDateInput.value = new Date().toISOString().split('T')[0];
+  
+  // 🔥 FIX: Reset required states
+  document.getElementById('mediaEvent').required = true;
+  document.getElementById('mediaDate').required = true;
+  document.getElementById('mediaTitle').required = true;
+  document.getElementById('bulkEvent').required = false;
+  document.getElementById('bulkDate').required = false;
+}
 
-    // Generate media ID
-    function generateMediaId() {
-      return 'media_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    }
-
-    // Validate file
-    function validateFile(file) {
-      const maxSize = 50 * 1024 * 1024; // 50MB
-      const allowedTypes = [
-        'image/jpeg',
-        'image/jpg',
-        'image/png',
-        'image/gif',
-        'image/webp',
-        'video/mp4',
-        'video/mov',
-        'video/avi',
-        'video/webm'
-      ];
+  // Upload file to Supabase Storage
+  async function uploadFileToStorage(fileObj, eventId, metadata) {
+    try {
+      // Create a unique file path
+      const timestamp = Date.now();
+      const safeFileName = fileObj.name.replace(/[^a-zA-Z0-9.]/g, '_');
+      const filePath = `${eventId}/${timestamp}_${safeFileName}`;
       
-      const errors = [];
+      // Upload to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+        .from('gallery')
+        .upload(filePath, fileObj.file, {
+          cacheControl: '3600',
+          upsert: false
+        });
       
-      if (file.size > maxSize) {
-        errors.push(`File "${file.name}" is too large (max 50MB)`);
-      }
+      if (uploadError) throw uploadError;
       
-      if (!allowedTypes.includes(file.type)) {
-        errors.push(`File "${file.name}" type not supported`);
-      }
+      // Get public URL
+      const { data: { publicUrl } } = supabaseAdmin.storage
+        .from('gallery')
+        .getPublicUrl(filePath);
       
       return {
-        isValid: errors.length === 0,
-        errors
+        success: true,
+        url: publicUrl,
+        storagePath: filePath,
+        size: fileObj.size,
+        type: fileObj.type
+      };
+    } catch (error) {
+      console.error('Upload error:', error);
+      return {
+        success: false,
+        error: error.message
       };
     }
+  }
 
-    // Add file to selection
-    function addFileToSelection(file) {
-      const validation = validateFile(file);
-      if (!validation.isValid) {
-        showMessage('error', validation.errors.join(', '));
-        return false;
-      }
+  // Upload files with progress tracking
+  async function uploadFiles(filesData, eventId, bulkMetadata) {
+    isUploading = true;
+    uploadProgress.style.display = 'block';
+    progressBar.style.width = '0%';
+    progressText.textContent = '0%';
+    
+    const totalFiles = filesData.length;
+    let uploadedCount = 0;
+    let successfulUploads = [];
+    let failedUploads = [];
+    
+    for (let i = 0; i < filesData.length; i++) {
+      const fileObj = filesData[i];
       
-      // Create file object
-      const fileObj = {
-        file: file,
-        id: 'file_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-        name: file.name,
-        size: file.size,
-        type: file.type.startsWith('image/') ? 'image' : 'video',
-        previewUrl: URL.createObjectURL(file)
+      // Create metadata for this file
+      const metadata = {
+        title: bulkMetadata.titlePrefix 
+          ? bulkMetadata.titlePrefix + ' ' + fileObj.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, ' ')
+          : fileObj.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, ' '),
+        description: bulkMetadata.description || '',
+        date: bulkMetadata.date
       };
       
-      selectedFilesArray.push(fileObj);
-      updateFileSelectionUI();
-      return true;
-    }
-
-    // Update file selection UI
-    function updateFileSelectionUI() {
-      // Clear previews
-      selectedFiles.innerHTML = '';
-      fileList.innerHTML = '';
+      // Update progress
+      progressText.textContent = `${Math.round((i / totalFiles) * 100)}%`;
+      progressBar.style.width = `${(i / totalFiles) * 100}%`;
       
-      if (selectedFilesArray.length === 0) {
-        selectedFiles.style.display = 'none';
-        multipleFilesInfo.style.display = 'none';
-        bulkSettings.style.display = 'none';
-        singleFileSettings.style.display = 'block';
-        return;
-      }
+      // Upload file
+      const result = await uploadFileToStorage(fileObj, eventId, metadata);
       
-      // Show selected files
-      selectedFiles.style.display = 'flex';
-      
-      // Create previews
-      selectedFilesArray.forEach((fileObj, index) => {
-        // Preview container
-        const preview = document.createElement('div');
-        preview.className = 'media-preview';
-        
-        if (fileObj.type === 'image') {
-          preview.innerHTML = `
-            <img src="${fileObj.previewUrl}" alt="${fileObj.name}">
-            <button class="remove-media" data-index="${index}">
-              <i class="fas fa-times"></i>
-            </button>
-          `;
-        } else {
-          preview.innerHTML = `
-            <video>
-              <source src="${fileObj.previewUrl}" type="${fileObj.file.type}">
-            </video>
-            <div style="position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.7); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">
-              <i class="fas fa-video"></i>
-            </div>
-            <button class="remove-media" data-index="${index}">
-              <i class="fas fa-times"></i>
-            </button>
-          `;
-        }
-        
-        selectedFiles.appendChild(preview);
-        
-        // File list item
-        const listItem = document.createElement('div');
-        listItem.className = 'file-info';
-        listItem.innerHTML = `
-          <div class="file-name">${fileObj.name}</div>
-          <div class="file-size">${formatFileSize(fileObj.size)} • ${fileObj.type}</div>
-        `;
-        fileList.appendChild(listItem);
-      });
-      
-      // Show/hide appropriate sections
-      if (selectedFilesArray.length > 1) {
-        multipleFilesInfo.style.display = 'block';
-        bulkSettings.style.display = 'block';
-        singleFileSettings.style.display = 'none';
-      } else {
-        multipleFilesInfo.style.display = 'none';
-        bulkSettings.style.display = 'none';
-        singleFileSettings.style.display = 'block';
-        
-        // Auto-fill single file form
-        if (selectedFilesArray.length === 1) {
-          const fileObj = selectedFilesArray[0];
-          document.getElementById('mediaTitle').value = 
-            fileObj.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, ' ');
-        }
-      }
-      
-      // Add event listeners to remove buttons
-      document.querySelectorAll('.remove-media').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const index = parseInt(e.target.closest('button').dataset.index);
-          removeFile(index);
-        });
-      });
-    }
-
-    // Remove file from selection
-    function removeFile(index) {
-      // Revoke object URL to prevent memory leaks
-      URL.revokeObjectURL(selectedFilesArray[index].previewUrl);
-      selectedFilesArray.splice(index, 1);
-      updateFileSelectionUI();
-    }
-
-    // Clear all files
-    function clearFileSelection() {
-      // Revoke all object URLs
-      selectedFilesArray.forEach(fileObj => {
-        URL.revokeObjectURL(fileObj.previewUrl);
-      });
-      
-      selectedFilesArray = [];
-      updateFileSelectionUI();
-      uploadProgress.style.display = 'none';
-      mediaForm.reset();
-      mediaDateInput.value = new Date().toISOString().split('T')[0];
-      bulkDateInput.value = new Date().toISOString().split('T')[0];
-    }
-
-    // Upload file to Firebase Storage
-    async function uploadFileToStorage(fileObj, eventId, metadata) {
-      try {
-        // Create storage reference
-        const timestamp = Date.now();
-        const safeFileName = fileObj.name.replace(/[^a-zA-Z0-9.]/g, '_');
-        const storageRef = storage.ref().child(
-          `media/${eventId}/${timestamp}_${safeFileName}`
-        );
-        
-        // Upload file
-        const snapshot = await storageRef.put(fileObj.file, {
-          contentType: fileObj.file.type,
-          customMetadata: {
-            originalName: fileObj.name,
-            title: metadata.title,
-            eventId: eventId
-          }
-        });
-        
-        // Get download URL
-        const downloadURL = await snapshot.ref.getDownloadURL();
-        
-        return {
-          success: true,
-          url: downloadURL,
-          storagePath: snapshot.ref.fullPath,
-          size: fileObj.size,
-          type: fileObj.type
-        };
-      } catch (error) {
-        console.error('Upload error:', error);
-        return {
-          success: false,
-          error: error.message
-        };
-      }
-    }
-
-    // Upload files with progress tracking
-    async function uploadFiles(filesData, eventId, bulkMetadata) {
-      isUploading = true;
-      uploadProgress.style.display = 'block';
-      progressBar.style.width = '0%';
-      progressText.textContent = '0%';
-      
-      const totalFiles = filesData.length;
-      let uploadedCount = 0;
-      let successfulUploads = [];
-      let failedUploads = [];
-      
-      for (let i = 0; i < filesData.length; i++) {
-        const fileObj = filesData[i];
-        
-        // Create metadata for this file
-        const metadata = {
-          title: bulkMetadata.titlePrefix 
-            ? bulkMetadata.titlePrefix + fileObj.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, ' ')
-            : fileObj.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, ' '),
-          description: bulkMetadata.description || '',
-          date: bulkMetadata.date
-        };
-        
-        // Update progress
-        progressText.textContent = `${Math.round((i / totalFiles) * 100)}%`;
-        progressBar.style.width = `${(i / totalFiles) * 100}%`;
-        
-        // Upload file
-        const result = await uploadFileToStorage(fileObj, eventId, metadata);
-        
-        if (result.success) {
-          // Save to Firestore
-          const mediaId = generateMediaId();
-          await db.collection('gallery').doc(mediaId).set({
+      if (result.success) {
+        // Save to Supabase database
+        const { error: dbError } = await supabaseAdmin
+          .from('gallery')
+          .insert([{
             type: fileObj.type,
             url: result.url,
-            storagePath: result.storagePath,
+            storage_path: result.storagePath,
             title: metadata.title,
             description: metadata.description,
-            eventId: eventId,
-            uploadDate: firebase.firestore.Timestamp.fromDate(new Date(metadata.date)),
-            fileSize: result.size,
-            fileName: fileObj.name,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
-          
-          successfulUploads.push(fileObj.name);
-        } else {
+            event_id: eventId,
+            upload_date: metadata.date,
+            file_size: result.size,
+            file_name: fileObj.name,
+            metadata: {
+              original_name: fileObj.name,
+              size: result.size,
+              mime_type: fileObj.file.type
+            }
+          }]);
+        
+        if (dbError) {
+          console.error('DB insert error:', dbError);
           failedUploads.push({
             name: fileObj.name,
-            error: result.error
+            error: 'Failed to save to database'
           });
-        }
-        
-        uploadedCount++;
-      }
-      
-      // Complete progress
-      progressBar.style.width = '100%';
-      progressText.textContent = '100%';
-      
-      // Reset after delay
-      setTimeout(() => {
-        uploadProgress.style.display = 'none';
-        clearFileSelection();
-        isUploading = false;
-      }, 1000);
-      
-      return {
-        total: totalFiles,
-        success: successfulUploads.length,
-        failed: failedUploads.length,
-        failedFiles: failedUploads
-      };
-    }
-
-    // Calculate storage usage
-    async function calculateStorageUsage() {
-      try {
-        // This is a simplified calculation
-        // In production, you might want to track this separately
-        const snapshot = await db.collection('gallery').get();
-        let totalSize = 0;
-        
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          if (data.fileSize) {
-            totalSize += data.fileSize;
-          }
-        });
-        
-        const totalMB = totalSize / (1024 * 1024);
-        const storageBar = document.getElementById('storageBar');
-        const usageText = document.querySelector('#storageUsage div:nth-child(2)');
-        
-        // Simple visualization (assuming 1GB limit)
-        const percentage = Math.min((totalMB / 1024) * 100, 100);
-        storageBar.style.width = `${percentage}%`;
-        usageText.textContent = `${totalMB.toFixed(2)} MB / 1024 MB`;
-        
-        // Color coding
-        if (percentage > 90) {
-          storageBar.style.background = 'var(--danger)';
-        } else if (percentage > 70) {
-          storageBar.style.background = 'var(--warning)';
         } else {
-          storageBar.style.background = 'var(--accent)';
+          successfulUploads.push(fileObj.name);
         }
-      } catch (error) {
-        console.error('Error calculating storage:', error);
-      }
-    }
-
-    // Load events
-    async function loadEvents() {
-      try {
-        eventsLoading.style.display = 'block';
-        eventsTable.style.display = 'none';
-        
-        const snapshot = await db.collection('events').orderBy('date', 'desc').get();
-        events = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        
-        updateEventsTable();
-        updateStats();
-        populateEventSelect();
-        populateBulkEventSelect();
-        
-        eventsLoading.style.display = 'none';
-        eventsTable.style.display = 'table';
-      } catch (error) {
-        console.error('Error loading events:', error);
-        showMessage('error', 'Failed to load events. Please try again.', error);
-        eventsLoading.innerHTML = `
-          <i class="fas fa-exclamation-triangle"></i>
-          <p>Failed to load events</p>
-        `;
-      }
-    }
-
-    // Update events table
-    function updateEventsTable() {
-      eventsTableBody.innerHTML = '';
-      
-      if (events.length === 0) {
-        eventsTableBody.innerHTML = `
-          <tr>
-            <td colspan="6" style="text-align: center; padding: 3rem; color: #666;">
-              <i class="fas fa-calendar-plus" style="font-size: 2rem; margin-bottom: 1rem;"></i>
-              <p>No events found. Add your first event!</p>
-            </td>
-          </tr>
-        `;
-        return;
-      }
-      
-      events.forEach(event => {
-        const eventDate = event.date?.toDate ? event.date.toDate() : new Date(event.date);
-        const mediaCount = media.filter(m => m.eventId === event.id).length;
-        
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${event.name}</td>
-          <td>${formatDate(eventDate)}</td>
-          <td>${event.location || '—'}</td>
-          <td>${mediaCount}</td>
-          <td>
-            <span class="status-badge status-published">Published</span>
-          </td>
-          <td>
-            <div class="action-buttons">
-              <button class="edit-btn" data-id="${event.id}" title="Edit">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="delete-btn" data-id="${event.id}" data-type="event" title="Delete">
-                <i class="fas fa-trash"></i>
-              </button>
-            </div>
-          </td>
-        `;
-        
-        eventsTableBody.appendChild(row);
-      });
-      
-      // Add event listeners
-      document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const eventId = e.target.closest('button').dataset.id;
-          editEvent(eventId);
-        });
-      });
-      
-      document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const eventId = e.target.closest('button').dataset.id;
-          const type = e.target.closest('button').dataset.type;
-          confirmDelete(eventId, type);
-        });
-      });
-    }
-
-    // Load media
-    async function loadMedia() {
-      try {
-        mediaLoading.style.display = 'block';
-        mediaTable.style.display = 'none';
-        
-        const snapshot = await db.collection('gallery').orderBy('uploadDate', 'desc').get();
-        media = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        
-        updateMediaTable();
-        updateStats();
-        calculateStorageUsage();
-        
-        mediaLoading.style.display = 'none';
-        mediaTable.style.display = 'table';
-      } catch (error) {
-        console.error('Error loading media:', error);
-        showMessage('error', 'Failed to load media. Please try again.', error);
-        mediaLoading.innerHTML = `
-          <i class="fas fa-exclamation-triangle"></i>
-          <p>Failed to load media</p>
-        `;
-      }
-    }
-
-    // Update media table
-    function updateMediaTable(filter = currentFilter) {
-      mediaTableBody.innerHTML = '';
-      
-      let filteredMedia = media;
-      if (filter === 'image') {
-        filteredMedia = media.filter(m => m.type === 'image');
-      } else if (filter === 'video') {
-        filteredMedia = media.filter(m => m.type === 'video');
-      }
-      
-      if (filteredMedia.length === 0) {
-        mediaTableBody.innerHTML = `
-          <tr>
-            <td colspan="7" style="text-align: center; padding: 3rem; color: #666;">
-              <i class="fas fa-images" style="font-size: 2rem; margin-bottom: 1rem;"></i>
-              <p>No ${filter === 'all' ? '' : filter} media found</p>
-            </td>
-          </tr>
-        `;
-        return;
-      }
-      
-      filteredMedia.forEach(item => {
-        const uploadDate = item.uploadDate?.toDate ? item.uploadDate.toDate() : new Date(item.uploadDate);
-        const event = events.find(e => e.id === item.eventId);
-        
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td class="thumbnail-cell">
-            <div class="media-thumbnail">
-              <img src="${item.url || 'https://via.placeholder.com/60'}" alt="${item.title}" 
-                   onerror="this.src='https://via.placeholder.com/60/002d72/ffffff?text=Image'"
-                   style="cursor: pointer;" onclick="previewMedia('${item.id}')">
-            </div>
-            <div class="thumbnail-actions">
-              <button class="thumbnail-btn" onclick="copyUrl('${item.url}')" title="Copy URL">
-                <i class="fas fa-link"></i>
-              </button>
-              <button class="thumbnail-btn" onclick="downloadFile('${item.url}', '${item.fileName || item.title}')" title="Download">
-                <i class="fas fa-download"></i>
-              </button>
-            </div>
-          </td>
-          <td>${item.title}</td>
-          <td>
-            <span class="status-badge ${item.type === 'image' ? 'status-published' : 'status-draft'}">
-              ${item.type === 'image' ? 'Image' : 'Video'}
-            </span>
-          </td>
-          <td>${event ? event.name : '—'}</td>
-          <td>${formatDate(uploadDate)}</td>
-          <td>${item.fileSize ? formatFileSize(item.fileSize) : '—'}</td>
-          <td>
-            <div class="action-buttons">
-              <button class="delete-btn" data-id="${item.id}" data-type="media" title="Delete">
-                <i class="fas fa-trash"></i>
-              </button>
-            </div>
-          </td>
-        `;
-        
-        mediaTableBody.appendChild(row);
-      });
-      
-      // Add delete event listeners
-      document.querySelectorAll('.delete-btn[data-type="media"]').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const mediaId = e.target.closest('button').dataset.id;
-          const type = e.target.closest('button').dataset.type;
-          confirmDelete(mediaId, type);
-        });
-      });
-    }
-
-    // Update stats
-    function updateStats() {
-      totalEvents.textContent = events.length;
-      totalMedia.textContent = media.length;
-    }
-
-    // Populate event select dropdowns
-    function populateEventSelect() {
-      mediaEventSelect.innerHTML = '<option value="">Select event</option>';
-      
-      events.forEach(event => {
-        const option = document.createElement('option');
-        option.value = event.id;
-        option.textContent = event.name;
-        mediaEventSelect.appendChild(option);
-      });
-    }
-
-    function populateBulkEventSelect() {
-      bulkEventSelect.innerHTML = '<option value="">Select event</option>';
-      
-      events.forEach(event => {
-        const option = document.createElement('option');
-        option.value = event.id;
-        option.textContent = event.name;
-        bulkEventSelect.appendChild(option);
-      });
-    }
-
-    // Preview media
-    window.previewMedia = function(mediaId) {
-      const mediaItem = media.find(m => m.id === mediaId);
-      if (!mediaItem) return;
-      
-      const previewTitle = document.getElementById('previewTitle');
-      previewTitle.textContent = mediaItem.title;
-      
-      if (mediaItem.type === 'image') {
-        previewImage.src = mediaItem.url;
-        previewImage.style.display = 'block';
-        previewVideo.style.display = 'none';
       } else {
-        previewVideo.src = mediaItem.url;
-        previewVideo.style.display = 'block';
-        previewImage.style.display = 'none';
-      }
-      
-      previewModal.classList.add('active');
-    }
-
-    // Copy URL to clipboard
-    window.copyUrl = function(url) {
-      navigator.clipboard.writeText(url)
-        .then(() => {
-          showMessage('success', 'URL copied to clipboard!');
-        })
-        .catch(err => {
-          showMessage('error', 'Failed to copy URL', err);
+        failedUploads.push({
+          name: fileObj.name,
+          error: result.error
         });
+      }
+      
+      uploadedCount++;
     }
-
-    // Download file
-    window.downloadFile = function(url, fileName) {
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    // Add/edit event
-    async function saveEvent(eventData) {
-      try {
-        const eventId = editingEventId || generateEventId(eventData.name);
-        
-        await db.collection('events').doc(eventId).set({
-          name: eventData.name,
-          date: firebase.firestore.Timestamp.fromDate(new Date(eventData.date)),
-          location: eventData.location || '',
-          description: eventData.description || '',
-          color: eventData.color || '#002d72',
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true });
-        
-        showMessage('success', editingEventId ? 'Event updated successfully!' : 'Event created successfully!');
-        
-        // Reload events
-        await loadEvents();
-        
-        // Close modal
-        closeEventModal.click();
-        editingEventId = null;
-        
-        // Reset form
-        eventForm.reset();
-      } catch (error) {
-        console.error('Error saving event:', error);
-        showMessage('error', 'Failed to save event. Please try again.', error);
-      }
-    }
-
-    // Upload media
-    async function uploadMedia() {
-      if (selectedFilesArray.length === 0) {
-        showMessage('error', 'Please select files to upload');
-        return;
-      }
-      
-      if (isUploading) {
-        showMessage('error', 'Please wait for current upload to complete');
-        return;
-      }
-      
-      let eventId, uploadDate, titlePrefix, description;
-      
-      if (selectedFilesArray.length === 1) {
-        // Single file
-        eventId = mediaEventSelect.value;
-        uploadDate = mediaDateInput.value;
-        titlePrefix = '';
-        description = document.getElementById('mediaDescription').value;
-      } else {
-        // Multiple files
-        eventId = bulkEventSelect.value;
-        uploadDate = bulkDateInput.value;
-        titlePrefix = document.getElementById('bulkTitlePrefix').value;
-        description = document.getElementById('bulkDescription').value;
-      }
-      
-      if (!eventId) {
-        showMessage('error', 'Please select an event');
-        return;
-      }
-      
-      if (!uploadDate) {
-        showMessage('error', 'Please select a date');
-        return;
-      }
-      
-      const bulkMetadata = {
-        titlePrefix: titlePrefix,
-        description: description,
-        date: uploadDate
-      };
-      
-      const result = await uploadFiles(selectedFilesArray, eventId, bulkMetadata);
-      
-      if (result.success > 0) {
-        showMessage('success', 
-          `Successfully uploaded ${result.success} file${result.success > 1 ? 's' : ''}. ` +
-          (result.failed > 0 ? `${result.failed} file${result.failed > 1 ? 's' : ''} failed.` : '')
-        );
-        
-        // Reload media
-        await loadMedia();
-      } else {
-        showMessage('error', 'All files failed to upload');
-      }
-      
-      if (result.failed > 0) {
-        console.error('Failed files:', result.failedFiles);
-      }
-    }
-
-    // Delete item
-    async function deleteItem() {
-      if (!deletingItem || !deletingType) return;
-      
-      try {
-        if (deletingType === 'event') {
-          // Delete event
-          await db.collection('events').doc(deletingItem).delete();
-          
-          // Also delete all media associated with this event
-          const mediaSnapshot = await db.collection('gallery').where('eventId', '==', deletingItem).get();
-          const deletePromises = [];
-          
-          mediaSnapshot.forEach(doc => {
-            const data = doc.data();
-            // Delete from storage if path exists
-            if (data.storagePath) {
-              const storageRef = storage.ref(data.storagePath);
-              deletePromises.push(storageRef.delete());
-            }
-            // Delete from Firestore
-            deletePromises.push(doc.ref.delete());
-          });
-          
-          await Promise.all(deletePromises);
-          
-          showMessage('success', 'Event and associated media deleted successfully!');
-        } else if (deletingType === 'media') {
-          // Get media item to delete from storage
-          const mediaDoc = await db.collection('gallery').doc(deletingItem).get();
-          const mediaData = mediaDoc.data();
-          
-          // Delete from storage if path exists
-          if (mediaData?.storagePath) {
-            const storageRef = storage.ref(mediaData.storagePath);
-            await storageRef.delete();
-          }
-          
-          // Delete from Firestore
-          await db.collection('gallery').doc(deletingItem).delete();
-          
-          showMessage('success', 'Media deleted successfully!');
-        }
-        
-        // Reload data
-        await loadEvents();
-        await loadMedia();
-        
-        // Close modal
-        deleteModal.classList.remove('active');
-        deletingItem = null;
-        deletingType = null;
-      } catch (error) {
-        console.error('Error deleting item:', error);
-        showMessage('error', 'Failed to delete item. Please try again.', error);
-      }
-    }
-
-    // Confirm delete
-    function confirmDelete(itemId, type) {
-      deletingItem = itemId;
-      deletingType = type;
-      
-      if (type === 'event') {
-        const event = events.find(e => e.id === itemId);
-        deleteMessage.textContent = `Are you sure you want to delete "${event?.name}"? This will also delete all associated media. This action cannot be undone.`;
-        storageDeleteMessage.style.display = 'block';
-      } else if (type === 'media') {
-        const mediaItem = media.find(m => m.id === itemId);
-        deleteMessage.textContent = `Are you sure you want to delete "${mediaItem?.title}"? This action cannot be undone.`;
-        storageDeleteMessage.style.display = 'block';
-      }
-      
-      deleteModal.classList.add('active');
-    }
-
-    // Initialize
-    document.addEventListener('DOMContentLoaded', () => {
-      // Set today's date as default
-      const today = new Date().toISOString().split('T')[0];
-      eventDateInput.value = today;
-      mediaDateInput.value = today;
-      bulkDateInput.value = today;
-      
-      // Load data
-      loadEvents();
-      loadMedia();
-    });
-
-    // Event Listeners
-
-    // Sidebar navigation
-    sidebarBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const section = btn.dataset.section;
-        
-        // Update active button
-        sidebarBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        
-        // Show selected section
-        adminSections.forEach(s => s.classList.remove('active'));
-        document.getElementById(`${section}Section`).classList.add('active');
-      });
-    });
-
-    // Tab buttons
-    tabBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const filter = btn.dataset.filter;
-        
-        // Update active tab
-        tabBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        
-        // Update table
-        currentFilter = filter;
-        updateMediaTable(filter);
-      });
-    });
-
-    // File upload
-    browseBtn.addEventListener('click', () => {
-      fileInput.click();
-    });
-
-    fileInput.addEventListener('change', (e) => {
-      const files = Array.from(e.target.files);
-      files.forEach(file => {
-        addFileToSelection(file);
-      });
-      fileInput.value = '';
-    });
-
-    // Drag and drop
-    fileDropZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      fileDropZone.classList.add('dragover');
-    });
-
-    fileDropZone.addEventListener('dragleave', (e) => {
-      e.preventDefault();
-      fileDropZone.classList.remove('dragover');
-    });
-
-    fileDropZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      fileDropZone.classList.remove('dragover');
-      
-      const files = Array.from(e.dataTransfer.files);
-      files.forEach(file => {
-        addFileToSelection(file);
-      });
-    });
-
-    // Media form submission
-    mediaForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      uploadMedia();
-    });
-
-    // Clear media form
-    mediaCancelBtn.addEventListener('click', clearFileSelection);
-
-    // Add event button
-    addEventBtn.addEventListener('click', () => {
-      editingEventId = null;
-      document.getElementById('modalTitle').textContent = 'Add New Event';
-      eventForm.reset();
-      eventDateInput.value = new Date().toISOString().split('T')[0];
-      eventModal.classList.add('active');
-    });
-
-    // Event form submission
-    eventForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      
-      const eventData = {
-        name: eventNameInput.value,
-        date: eventDateInput.value,
-        location: eventLocationInput.value,
-        description: eventDescriptionInput.value,
-        color: eventColorInput.value
-      };
-      
-      saveEvent(eventData);
-    });
-
-    // Close event modal
-    closeEventModal.addEventListener('click', () => {
-      eventModal.classList.remove('active');
-      editingEventId = null;
-      eventForm.reset();
-    });
-
-    cancelEventBtn.addEventListener('click', () => {
-      eventModal.classList.remove('active');
-      editingEventId = null;
-      eventForm.reset();
-    });
-
-    // Delete modal
-    confirmDeleteBtn.addEventListener('click', deleteItem);
     
-    closeDeleteModal.addEventListener('click', () => {
-      deleteModal.classList.remove('active');
-      deletingItem = null;
-      deletingType = null;
-      storageDeleteMessage.style.display = 'none';
-    });
+    // Complete progress
+    progressBar.style.width = '100%';
+    progressText.textContent = '100%';
+    
+    // Reset after delay
+    setTimeout(() => {
+      uploadProgress.style.display = 'none';
+      clearFileSelection();
+      isUploading = false;
+    }, 1000);
+    
+    return {
+      total: totalFiles,
+      success: successfulUploads.length,
+      failed: failedUploads.length,
+      failedFiles: failedUploads
+    };
+  }
 
-    cancelDeleteBtn.addEventListener('click', () => {
-      deleteModal.classList.remove('active');
-      deletingItem = null;
-      deletingType = null;
-      storageDeleteMessage.style.display = 'none';
-    });
-
-    // Preview modal
-    closePreviewModal.addEventListener('click', () => {
-      previewModal.classList.remove('active');
-      previewImage.src = '';
-      previewVideo.src = '';
-    });
-
-    // Logout
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      if (confirm('Are you sure you want to logout?')) {
-        window.location.href = 'index.html';
+  // Calculate storage usage
+  async function calculateStorageUsage() {
+    try {
+      // Get total file size from database
+      const { data: media, error } = await supabaseAdmin
+        .from('gallery')
+        .select('file_size');
+      
+      if (error) throw error;
+      
+      const totalSize = (media || []).reduce((sum, item) => sum + (item.file_size || 0), 0);
+      
+      const totalMB = totalSize / (1024 * 1024);
+      const storageBar = document.getElementById('storageBar');
+      const usageText = document.querySelector('#storageUsage div:nth-child(2)');
+      
+      // Simple visualization (assuming 1GB limit)
+      const percentage = Math.min((totalMB / 1024) * 100, 100);
+      storageBar.style.width = `${percentage}%`;
+      usageText.textContent = `${totalMB.toFixed(2)} MB / 1024 MB`;
+      
+      // Color coding
+      if (percentage > 90) {
+        storageBar.style.background = '#ff4444';
+      } else if (percentage > 70) {
+        storageBar.style.background = '#ffaa00';
+      } else {
+        storageBar.style.background = '#002d72';
       }
-    });
+    } catch (error) {
+      console.error('Error calculating storage:', error);
+    }
+  }
 
-    // Keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
-      // Escape to close modals
-      if (e.key === 'Escape') {
-        if (eventModal.classList.contains('active')) {
-          closeEventModal.click();
+  // Load events
+  async function loadEvents() {
+    try {
+      eventsLoading.style.display = 'block';
+      eventsTable.style.display = 'none';
+      
+      const { data, error } = await supabaseAdmin
+        .from('events')
+        .select('*')
+        .order('date', { ascending: false });
+      
+      if (error) throw error;
+      
+      events = (data || []).map(event => ({
+        id: event.id,
+        name: event.name,
+        date: event.date ? new Date(event.date) : new Date(),
+        location: event.location,
+        description: event.description,
+        color: event.color || '#002d72'
+      }));
+      
+      updateEventsTable();
+      updateStats();
+      populateEventSelect();
+      populateBulkEventSelect();
+      
+      eventsLoading.style.display = 'none';
+      eventsTable.style.display = 'table';
+    } catch (error) {
+      console.error('Error loading events:', error);
+      showMessage('error', 'Failed to load events. Please try again.', error);
+      eventsLoading.innerHTML = `
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>Failed to load events</p>
+      `;
+    }
+  }
+
+  // Update events table
+  function updateEventsTable() {
+    eventsTableBody.innerHTML = '';
+    
+    if (events.length === 0) {
+      eventsTableBody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align: center; padding: 3rem; color: #666;">
+            <i class="fas fa-calendar-plus" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+            <p>No events found. Add your first event!</p>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+    
+    events.forEach(event => {
+      const eventDate = event.date ? new Date(event.date) : new Date();
+      const mediaCount = media.filter(m => m.event_id === event.id).length;
+      
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${event.name}</td>
+        <td>${formatDate(eventDate)}</td>
+        <td>${event.location || '—'}</td>
+        <td>${mediaCount}</td>
+        <td>
+          <span class="status-badge status-published">Published</span>
+        </td>
+        <td>
+          <div class="action-buttons">
+            <button class="edit-btn" data-id="${event.id}" title="Edit">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="delete-btn" data-id="${event.id}" data-type="event" title="Delete">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </td>
+      `;
+      
+      eventsTableBody.appendChild(row);
+    });
+    
+    // Add event listeners
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const eventId = e.target.closest('button').dataset.id;
+        editEvent(eventId);
+      });
+    });
+    
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const eventId = e.target.closest('button').dataset.id;
+        const type = e.target.closest('button').dataset.type;
+        confirmDelete(eventId, type);
+      });
+    });
+  }
+
+  // Edit event
+  function editEvent(eventId) {
+    const event = events.find(e => e.id === eventId);
+    if (!event) return;
+    
+    editingEventId = eventId;
+    document.getElementById('modalTitle').textContent = 'Edit Event';
+    eventNameInput.value = event.name;
+    
+    const eventDate = event.date ? new Date(event.date) : new Date();
+    eventDateInput.value = eventDate.toISOString().split('T')[0];
+    
+    eventLocationInput.value = event.location || '';
+    eventDescriptionInput.value = event.description || '';
+    eventColorInput.value = event.color || '#002d72';
+    
+    eventModal.classList.add('active');
+  }
+
+  // Load media
+  async function loadMedia() {
+    try {
+      mediaLoading.style.display = 'block';
+      mediaTable.style.display = 'none';
+      
+      const { data, error } = await supabaseAdmin
+        .from('gallery')
+        .select('*')
+        .order('upload_date', { ascending: false });
+      
+      if (error) throw error;
+      
+      media = (data || []).map(item => ({
+        id: item.id,
+        ...item
+      }));
+      
+      updateMediaTable();
+      updateStats();
+      calculateStorageUsage();
+      
+      mediaLoading.style.display = 'none';
+      mediaTable.style.display = 'table';
+    } catch (error) {
+      console.error('Error loading media:', error);
+      showMessage('error', 'Failed to load media. Please try again.', error);
+      mediaLoading.innerHTML = `
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>Failed to load media</p>
+      `;
+    }
+  }
+
+  // Update media table
+  function updateMediaTable(filter = currentFilter) {
+    mediaTableBody.innerHTML = '';
+    
+    let filteredMedia = media;
+    if (filter === 'image') {
+      filteredMedia = media.filter(m => m.type === 'image');
+    } else if (filter === 'video') {
+      filteredMedia = media.filter(m => m.type === 'video');
+    }
+    
+    if (filteredMedia.length === 0) {
+      mediaTableBody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align: center; padding: 3rem; color: #666;">
+            <i class="fas fa-images" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+            <p>No ${filter === 'all' ? '' : filter} media found</p>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+    
+    filteredMedia.forEach(item => {
+      const uploadDate = item.upload_date ? new Date(item.upload_date) : new Date();
+      const event = events.find(e => e.id === item.event_id);
+      
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="thumbnail-cell">
+          <div class="media-thumbnail">
+            <img src="${item.url || 'https://via.placeholder.com/60'}" alt="${item.title}" 
+                 onerror="this.src='https://via.placeholder.com/60/002d72/ffffff?text=Image'"
+                 style="cursor: pointer;" onclick="previewMedia('${item.id}')">
+          </div>
+          <div class="thumbnail-actions">
+            <button class="thumbnail-btn" onclick="copyUrl('${item.url}')" title="Copy URL">
+              <i class="fas fa-link"></i>
+            </button>
+            <button class="thumbnail-btn" onclick="downloadFile('${item.url}', '${item.file_name || item.title}')" title="Download">
+              <i class="fas fa-download"></i>
+            </button>
+          </div>
+        </td>
+        <td>${item.title}</td>
+        <td>
+          <span class="status-badge ${item.type === 'image' ? 'status-published' : 'status-draft'}">
+            ${item.type === 'image' ? 'Image' : 'Video'}
+          </span>
+        </td>
+        <td>${event ? event.name : '—'}</td>
+        <td>${formatDate(uploadDate)}</td>
+        <td>${item.file_size ? formatFileSize(item.file_size) : '—'}</td>
+        <td>
+          <div class="action-buttons">
+            <button class="delete-btn" data-id="${item.id}" data-type="media" title="Delete">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </td>
+      `;
+      
+      mediaTableBody.appendChild(row);
+    });
+    
+    // Add delete event listeners
+    document.querySelectorAll('.delete-btn[data-type="media"]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const mediaId = e.target.closest('button').dataset.id;
+        const type = e.target.closest('button').dataset.type;
+        confirmDelete(mediaId, type);
+      });
+    });
+  }
+
+  // Update stats
+  function updateStats() {
+    totalEvents.textContent = events.length;
+    totalMedia.textContent = media.length;
+  }
+
+  // Populate event select dropdowns
+  function populateEventSelect() {
+    mediaEventSelect.innerHTML = '<option value="">Select event</option>';
+    
+    events.forEach(event => {
+      const option = document.createElement('option');
+      option.value = event.id;
+      option.textContent = event.name;
+      mediaEventSelect.appendChild(option);
+    });
+  }
+
+  function populateBulkEventSelect() {
+    bulkEventSelect.innerHTML = '<option value="">Select event</option>';
+    
+    events.forEach(event => {
+      const option = document.createElement('option');
+      option.value = event.id;
+      option.textContent = event.name;
+      bulkEventSelect.appendChild(option);
+    });
+  }
+
+  // Preview media
+  window.previewMedia = function(mediaId) {
+    const mediaItem = media.find(m => m.id === mediaId);
+    if (!mediaItem) return;
+    
+    const previewTitle = document.getElementById('previewTitle');
+    previewTitle.textContent = mediaItem.title;
+    
+    if (mediaItem.type === 'image') {
+      previewImage.src = mediaItem.url;
+      previewImage.style.display = 'block';
+      previewVideo.style.display = 'none';
+    } else {
+      previewVideo.src = mediaItem.url;
+      previewVideo.style.display = 'block';
+      previewImage.style.display = 'none';
+    }
+    
+    previewModal.classList.add('active');
+  }
+
+  // Copy URL to clipboard
+  window.copyUrl = function(url) {
+    navigator.clipboard.writeText(url)
+      .then(() => {
+        showMessage('success', 'URL copied to clipboard!');
+      })
+      .catch(err => {
+        showMessage('error', 'Failed to copy URL', err);
+      });
+  }
+
+  // Download file
+  window.downloadFile = function(url, fileName) {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  // Add/edit event
+  async function saveEvent(eventData) {
+    try {
+      const eventId = editingEventId || generateEventId(eventData.name);
+      
+      const eventObject = {
+        name: eventData.name,
+        date: eventData.date,
+        location: eventData.location || '',
+        description: eventData.description || '',
+        color: eventData.color || '#002d72',
+        updated_at: new Date().toISOString()
+      };
+      
+      const { error } = await supabaseAdmin
+        .from('events')
+        .upsert([{ id: eventId, ...eventObject }]);
+      
+      if (error) throw error;
+      
+      showMessage('success', editingEventId ? 'Event updated successfully!' : 'Event created successfully!');
+      
+      // Reload events
+      await loadEvents();
+      
+      // Close modal
+      closeEventModal.click();
+      editingEventId = null;
+      
+      // Reset form
+      eventForm.reset();
+    } catch (error) {
+      console.error('Error saving event:', error);
+      showMessage('error', 'Failed to save event. Please try again.', error);
+    }
+  }
+
+  // Upload media
+  async function uploadMedia() {
+    if (selectedFilesArray.length === 0) {
+      showMessage('error', 'Please select files to upload');
+      return;
+    }
+    
+    if (isUploading) {
+      showMessage('error', 'Please wait for current upload to complete');
+      return;
+    }
+    
+    let eventId, uploadDate, titlePrefix, description;
+    
+    if (selectedFilesArray.length === 1) {
+      // Single file
+      eventId = mediaEventSelect.value;
+      uploadDate = mediaDateInput.value;
+      titlePrefix = document.getElementById('mediaTitle').value;
+      description = document.getElementById('mediaDescription').value;
+    } else {
+      // Multiple files
+      eventId = bulkEventSelect.value;
+      uploadDate = bulkDateInput.value;
+      titlePrefix = document.getElementById('bulkTitlePrefix').value;
+      description = document.getElementById('bulkDescription').value;
+    }
+    
+    if (!eventId) {
+      showMessage('error', 'Please select an event');
+      return;
+    }
+    
+    if (!uploadDate) {
+      showMessage('error', 'Please select a date');
+      return;
+    }
+    
+    const bulkMetadata = {
+      titlePrefix: titlePrefix,
+      description: description,
+      date: uploadDate
+    };
+    
+    const result = await uploadFiles(selectedFilesArray, eventId, bulkMetadata);
+    
+    if (result.success > 0) {
+      showMessage('success', 
+        `Successfully uploaded ${result.success} file${result.success > 1 ? 's' : ''}. ` +
+        (result.failed > 0 ? `${result.failed} file${result.failed > 1 ? 's' : ''} failed.` : '')
+      );
+      
+      // Reload media
+      await loadMedia();
+    } else {
+      showMessage('error', 'All files failed to upload');
+    }
+    
+    if (result.failed > 0) {
+      console.error('Failed files:', result.failedFiles);
+    }
+  }
+
+  // Delete item
+  async function deleteItem() {
+    if (!deletingItem || !deletingType) return;
+    
+    try {
+      if (deletingType === 'event') {
+        // Get all media for this event
+        const { data: eventMedia, error: mediaError } = await supabaseAdmin
+          .from('gallery')
+          .select('storage_path')
+          .eq('event_id', deletingItem);
+        
+        if (mediaError) throw mediaError;
+        
+        // Delete files from storage
+        if (eventMedia && eventMedia.length > 0) {
+          const storagePaths = eventMedia.map(m => m.storage_path).filter(Boolean);
+          if (storagePaths.length > 0) {
+            const { error: storageError } = await supabaseAdmin.storage
+              .from('gallery')
+              .remove(storagePaths);
+            
+            if (storageError) throw storageError;
+          }
         }
-        if (deleteModal.classList.contains('active')) {
-          closeDeleteModal.click();
+        
+        // Delete media from database
+        const { error: deleteMediaError } = await supabaseAdmin
+          .from('gallery')
+          .delete()
+          .eq('event_id', deletingItem);
+        
+        if (deleteMediaError) throw deleteMediaError;
+        
+        // Delete event
+        const { error: deleteEventError } = await supabaseAdmin
+          .from('events')
+          .delete()
+          .eq('id', deletingItem);
+        
+        if (deleteEventError) throw deleteEventError;
+        
+        showMessage('success', 'Event and associated media deleted successfully!');
+        
+      } else if (deletingType === 'media') {
+        // Get media item to delete from storage
+        const { data: mediaItem, error: fetchError } = await supabaseAdmin
+          .from('gallery')
+          .select('storage_path')
+          .eq('id', deletingItem)
+          .single();
+        
+        if (fetchError) throw fetchError;
+        
+        // Delete from storage if path exists
+        if (mediaItem?.storage_path) {
+          const { error: storageError } = await supabaseAdmin.storage
+            .from('gallery')
+            .remove([mediaItem.storage_path]);
+          
+          if (storageError) throw storageError;
         }
-        if (previewModal.classList.contains('active')) {
-          closePreviewModal.click();
-        }
+        
+        // Delete from database
+        const { error: deleteError } = await supabaseAdmin
+          .from('gallery')
+          .delete()
+          .eq('id', deletingItem);
+        
+        if (deleteError) throw deleteError;
+        
+        showMessage('success', 'Media deleted successfully!');
       }
       
-      // Ctrl+U to focus upload section
-      if (e.ctrlKey && e.key === 'u') {
-        e.preventDefault();
-        sidebarBtns.forEach(b => b.classList.remove('active'));
-        document.querySelector('[data-section="addMedia"]').classList.add('active');
-        adminSections.forEach(s => s.classList.remove('active'));
-        document.getElementById('addMediaSection').classList.add('active');
-      }
+      // Reload data
+      await loadEvents();
+      await loadMedia();
+      
+      // Close modal
+      deleteModal.classList.remove('active');
+      deletingItem = null;
+      deletingType = null;
+    } catch (error) {
+      console.error('Error deleting item:', error);
+      showMessage('error', 'Failed to delete item. Please try again.', error);
+    }
+  }
+
+  // Confirm delete
+  function confirmDelete(itemId, type) {
+    deletingItem = itemId;
+    deletingType = type;
+    
+    if (type === 'event') {
+      const event = events.find(e => e.id === itemId);
+      deleteMessage.textContent = `Are you sure you want to delete "${event?.name}"? This will also delete all associated media. This action cannot be undone.`;
+      storageDeleteMessage.style.display = 'block';
+    } else if (type === 'media') {
+      const mediaItem = media.find(m => m.id === itemId);
+      deleteMessage.textContent = `Are you sure you want to delete "${mediaItem?.title}"? This action cannot be undone.`;
+      storageDeleteMessage.style.display = 'block';
+    }
+    
+    deleteModal.classList.add('active');
+  }
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    // Set today's date as default
+    const today = new Date().toISOString().split('T')[0];
+    eventDateInput.value = today;
+    mediaDateInput.value = today;
+    bulkDateInput.value = today;
+    
+    // Load data
+    loadEvents();
+    loadMedia();
+  });
+
+  // Event Listeners
+
+  // Sidebar navigation
+  sidebarBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const section = btn.dataset.section;
+      
+      // Update active button
+      sidebarBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      // Show selected section
+      adminSections.forEach(s => s.classList.remove('active'));
+      document.getElementById(`${section}Section`).classList.add('active');
     });
-  </script>
+  });
+
+  // Tab buttons
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter;
+      
+      // Update active tab
+      tabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      // Update table
+      currentFilter = filter;
+      updateMediaTable(filter);
+    });
+  });
+
+  // File upload
+  browseBtn.addEventListener('click', () => {
+    fileInput.click();
+  });
+
+  fileInput.addEventListener('change', (e) => {
+    const files = Array.from(e.target.files);
+    files.forEach(file => {
+      addFileToSelection(file);
+    });
+    fileInput.value = '';
+  });
+
+  // Drag and drop
+  fileDropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    fileDropZone.classList.add('dragover');
+  });
+
+  fileDropZone.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    fileDropZone.classList.remove('dragover');
+  });
+
+  fileDropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    fileDropZone.classList.remove('dragover');
+    
+    const files = Array.from(e.dataTransfer.files);
+    files.forEach(file => {
+      addFileToSelection(file);
+    });
+  });
+
+  // Media form submission
+  mediaForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    uploadMedia();
+  });
+
+  // Clear media form
+  mediaCancelBtn.addEventListener('click', clearFileSelection);
+
+  // Add event button
+  addEventBtn.addEventListener('click', () => {
+    editingEventId = null;
+    document.getElementById('modalTitle').textContent = 'Add New Event';
+    eventForm.reset();
+    eventDateInput.value = new Date().toISOString().split('T')[0];
+    eventModal.classList.add('active');
+  });
+
+  // Event form submission
+  eventForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const eventData = {
+      name: eventNameInput.value,
+      date: eventDateInput.value,
+      location: eventLocationInput.value,
+      description: eventDescriptionInput.value,
+      color: eventColorInput.value
+    };
+    
+    saveEvent(eventData);
+  });
+
+  // Close event modal
+  closeEventModal.addEventListener('click', () => {
+    eventModal.classList.remove('active');
+    editingEventId = null;
+    eventForm.reset();
+  });
+
+  cancelEventBtn.addEventListener('click', () => {
+    eventModal.classList.remove('active');
+    editingEventId = null;
+    eventForm.reset();
+  });
+
+  // Delete modal
+  confirmDeleteBtn.addEventListener('click', deleteItem);
+  
+  closeDeleteModal.addEventListener('click', () => {
+    deleteModal.classList.remove('active');
+    deletingItem = null;
+    deletingType = null;
+    storageDeleteMessage.style.display = 'none';
+  });
+
+  cancelDeleteBtn.addEventListener('click', () => {
+    deleteModal.classList.remove('active');
+    deletingItem = null;
+    deletingType = null;
+    storageDeleteMessage.style.display = 'none';
+  });
+
+  // Preview modal
+  closePreviewModal.addEventListener('click', () => {
+    previewModal.classList.remove('active');
+    previewImage.src = '';
+    previewVideo.src = '';
+  });
+
+  // Logout
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    if (confirm('Are you sure you want to logout?')) {
+      window.location.href = 'index.html';
+    }
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    // Escape to close modals
+    if (e.key === 'Escape') {
+      if (eventModal.classList.contains('active')) {
+        closeEventModal.click();
+      }
+      if (deleteModal.classList.contains('active')) {
+        closeDeleteModal.click();
+      }
+      if (previewModal.classList.contains('active')) {
+        closePreviewModal.click();
+      }
+    }
+    
+    // Ctrl+U to focus upload section
+    if (e.ctrlKey && e.key === 'u') {
+      e.preventDefault();
+      sidebarBtns.forEach(b => b.classList.remove('active'));
+      document.querySelector('[data-section="addMedia"]').classList.add('active');
+      adminSections.forEach(s => s.classList.remove('active'));
+      document.getElementById('addMediaSection').classList.add('active');
+    }
+  });
+</script>
 </body>
 </html>
