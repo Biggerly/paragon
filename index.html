@@ -3686,6 +3686,7 @@ function openMediaLightbox(type, src, title, info, category) {
     `;
   }
   
+  // Updated caption to show title as the event name
   lightboxCaption.innerHTML = `
     <h4>${title}</h4>
     <p>${info} • ${category}</p>
@@ -3846,11 +3847,10 @@ let carouselData = {
   pictures: [],
   videos: []
 };
-
-// ===== LOAD GALLERY FROM supabaseClient =====
-async function loadGalleryFromsupabaseClient() {
+// ===== LOAD GALLERY FROM SUPABASE =====
+async function loadGalleryFromSupabaseClient() {
   try {
-    console.log('Loading gallery from supabaseClient...');
+    console.log('Loading gallery from Supabase...');
     
     // 1. Load Images
     const { data: pictures, error: picturesError } = await supabaseClient
@@ -3864,7 +3864,10 @@ async function loadGalleryFromsupabaseClient() {
     carouselData.pictures = (pictures || []).map(item => ({
       id: item.id,
       src: item.url,
-      title: item.title || 'Gallery Image',
+      // Use event_name if available, otherwise fall back to title
+      title: item.event_name || item.title || 'Gallery Image',
+      // Optional: Include both for reference
+      event_name: item.event_name || '',
       date: item.upload_date ? 
              new Date(item.upload_date).toLocaleDateString() : 'Recent',
       category: item.category || 'Gallery'
@@ -3883,18 +3886,21 @@ async function loadGalleryFromsupabaseClient() {
       id: item.id,
       src: item.url,
       poster: item.thumbnail_url || item.url,
-      title: item.title || 'Gallery Video',
+      // Use event_name if available, otherwise fall back to title
+      title: item.event_name || item.title || 'Gallery Video',
+      // Optional: Include both for reference
+      event_name: item.event_name || '',
       duration: item.metadata?.duration || '2:30',
       category: item.category || 'Gallery'
     }));
     
-    console.log('Loaded from supabaseClient:', carouselData);
+    console.log('Loaded from Supabase:', carouselData);
     
     // Initialize carousels
     initializeCarousels();
     
   } catch (error) {
-    console.error('Error loading from supabaseClient:', error);
+    console.error('Error loading from Supabase:', error);
     carouselData.pictures = [];
     carouselData.videos = [];
     initializeCarousels();
@@ -4060,8 +4066,6 @@ function openModal() {
   loadEventsFromsupabaseClient();
 }
 // ===== LIGHTBOX AND VIDEO PLAYER ELEMENTS =====
-
-// ===== CAROUSEL FUNCTIONS =====
 function initializeCarousels() {
   // Get carousel elements
   const picturesCarousel = document.getElementById('picturesCarousel');
@@ -4075,7 +4079,7 @@ function initializeCarousels() {
   videosCarousel.innerHTML = '';
   videosDots.innerHTML = '';
   
-  // Pictures Carousel
+  // Pictures Carousel - Updated caption to show event name
   carouselData.pictures.forEach((item, index) => {
     // Create picture item
     const itemEl = document.createElement('div');
@@ -4085,10 +4089,11 @@ function initializeCarousels() {
       <div class="carousel-caption">
         <h4>${item.title}</h4>
         <p>${item.date} • ${item.category}</p>
+        ${item.event_name ? `<p class="event-name"><i class="fas fa-tag"></i> ${item.event_name}</p>` : ''}
       </div>
     `;
     
-    // Add click event for lightbox
+    // Add click event for lightbox - Updated to pass correct title
     itemEl.addEventListener('click', () => {
       openMediaLightbox('image', item.src, item.title, item.date, item.category);
     });
@@ -4103,7 +4108,7 @@ function initializeCarousels() {
     picturesDots.appendChild(dot);
   });
   
-  // Videos Carousel
+  // Videos Carousel - Updated caption to show event name
   carouselData.videos.forEach((item, index) => {
     // Create video item
     const itemEl = document.createElement('div');
@@ -4113,10 +4118,11 @@ function initializeCarousels() {
       <div class="carousel-caption">
         <h4>${item.title}</h4>
         <p>${item.duration} • ${item.category}</p>
+        ${item.event_name ? `<p class="event-name"><i class="fas fa-tag"></i> ${item.event_name}</p>` : ''}
       </div>
     `;
     
-    // Add click event for video player
+    // Add click event for video player - Updated to pass correct title
     itemEl.addEventListener('click', () => {
       openMediaLightbox('video', item.src, item.title, item.duration, item.category);
     });
@@ -4131,8 +4137,8 @@ function initializeCarousels() {
     videosDots.appendChild(dot);
   });
   
-  // Load events from supabaseClient (FIXED THIS LINE)
-  loadEventsFromsupabaseClient();
+  // Load events from Supabase
+  loadEventsFromSupabaseClient();
 }
 
 function setupMediaControls() {
@@ -4598,6 +4604,7 @@ window.addEventListener('load', initHeroSlideshow);
 </script>
 </body>
 </html>
+
 
 
 
